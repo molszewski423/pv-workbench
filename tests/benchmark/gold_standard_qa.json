@@ -1,0 +1,433 @@
+{
+  "description": "31-question gold standard benchmark for PV AI Workbench retrieval validation. source_notes (list) accepted per question; any match in top-5 counts as hit.",
+  "scoring": "precision@5 (source note in top 5 retrieved chunks) and MRR (mean reciprocal rank)",
+  "questions": [
+    {
+      "id": "REG-01",
+      "module": "regulatory_qa",
+      "question": "What are the four criteria that make an ICSR a minimum valid case under ICH E2A?",
+      "expected_pts": [
+        "ICH E2A",
+        "valid ICSR",
+        "identifiable patient",
+        "suspect medicinal product"
+      ],
+      "source_note": "Guidelines/ICH E2A - Clinical Safety Data.md",
+      "answer_key": "Identifiable patient, suspect medicinal product, suspect adverse reaction, identifiable reporter"
+    },
+    {
+      "id": "REG-02",
+      "module": "regulatory_qa",
+      "question": "What are the ICH E2A seriousness criteria for an adverse event?",
+      "expected_pts": [
+        "serious",
+        "death",
+        "life-threatening",
+        "hospitalization",
+        "disability",
+        "congenital"
+      ],
+      "source_note": "Guidelines/ICH E2A - Clinical Safety Data.md",
+      "answer_key": "Death, life-threatening, hospitalization/prolongation, disability, congenital anomaly, medically important"
+    },
+    {
+      "id": "REG-03",
+      "module": "regulatory_qa",
+      "question": "What is the expedited reporting timeline for fatal or life-threatening unexpected SUSARs?",
+      "expected_pts": [
+        "7 days",
+        "calendar days",
+        "expedited",
+        "SUSAR"
+      ],
+      "source_note": "Guidelines/ICH E2A - Clinical Safety Data.md",
+      "answer_key": "7 calendar days for initial report, 8 additional days for follow-up"
+    },
+    {
+      "id": "REG-04",
+      "module": "regulatory_qa",
+      "question": "How does ICH E2A define an unexpected adverse drug reaction?",
+      "expected_pts": [
+        "unexpected",
+        "product information",
+        "Investigator Brochure",
+        "SmPC"
+      ],
+      "source_note": "Guidelines/ICH E2A - Clinical Safety Data.md",
+      "answer_key": "Nature, severity, specificity or outcome not consistent with applicable product information"
+    },
+    {
+      "id": "REG-05",
+      "module": "regulatory_qa",
+      "question": "What are the four components of the signal management process under EMA GVP Module VI?",
+      "expected_pts": [
+        "signal detection",
+        "signal validation",
+        "signal analysis",
+        "recommendation"
+      ],
+      "source_note": "Guidelines/EMA GVP Module VI - Signal Management.md",
+      "answer_key": "Signal detection, signal validation, signal analysis and prioritization, recommendation for action"
+    },
+    {
+      "id": "REG-06",
+      "module": "regulatory_qa",
+      "question": "How does EMA GVP Module VI define a pharmacovigilance signal?",
+      "expected_pts": [
+        "signal",
+        "new potentially causal association",
+        "sufficient likelihood",
+        "verificatory action"
+      ],
+      "source_note": "Guidelines/EMA GVP Module VI - Signal Management.md",
+      "answer_key": "Information suggesting a new potentially causal association or new aspect of a known association, judged of sufficient likelihood to justify verificatory action"
+    },
+    {
+      "id": "REG-07",
+      "module": "regulatory_qa",
+      "question": "What data sources are used for signal detection according to GVP Module VI?",
+      "expected_pts": [
+        "spontaneous reports",
+        "clinical studies",
+        "literature",
+        "registries"
+      ],
+      "source_note": "Guidelines/EMA GVP Module VI - Signal Management.md",
+      "answer_key": "Spontaneous reporting systems, clinical studies, scientific literature, registries and databases, digital health data"
+    },
+    {
+      "id": "REG-08",
+      "module": "regulatory_qa",
+      "question": "What does ICH E2E guidance say about the four components of pharmacovigilance planning?",
+      "expected_pts": [
+        "ICH E2E",
+        "pharmacovigilance planning",
+        "signal management"
+      ],
+      "source_note": "Guidelines/ICH E2E - Pharmacovigilance Planning.md",
+      "answer_key": "Safety specification, pharmacovigilance plan, routine pharmacovigilance, additional pharmacovigilance activities"
+    },
+    {
+      "id": "REG-09",
+      "module": "regulatory_qa",
+      "question": "What regulatory guideline governs individual case safety report data elements in electronic format?",
+      "expected_pts": [
+        "E2B",
+        "ICH E2B",
+        "electronic",
+        "data elements",
+        "ICSR"
+      ],
+      "source_note": "Guidelines/ICH E2B(R3) - Electronic Transmission.md",
+      "answer_key": "ICH E2B(R3) \u2014 Clinical Safety Data Management: Data Elements for Transmission of Individual Case Safety Reports"
+    },
+    {
+      "id": "REG-10",
+      "module": "regulatory_qa",
+      "question": "What are the key differences between E2B(R2) and E2B(R3) formats?",
+      "expected_pts": [
+        "E2B(R3)",
+        "E2B(R2)",
+        "XML",
+        "HL7",
+        "ICSR"
+      ],
+      "source_note": "Guidelines/ICH E2B(R3) - Electronic Transmission.md",
+      "answer_key": "E2B(R3) uses HL7 ICSR v3 XML schema; adds structured data for medical history, lab data, and improved narrative fields"
+    },
+    {
+      "id": "SIG-01",
+      "module": "signal_detection",
+      "question": "What are the Evans criteria for a positive PRR signal?",
+      "expected_pts": [
+        "PRR",
+        "2.0",
+        "N >= 3",
+        "chi-squared",
+        "4.0",
+        "Evans"
+      ],
+      "source_note": "Guidelines/Evans Criteria PRR Signal Detection.md",
+      "answer_key": "PRR >= 2.0 AND N >= 3 AND chi-squared >= 4.0 (all three must be met)"
+    },
+    {
+      "id": "SIG-02",
+      "module": "signal_detection",
+      "question": "How is the Proportional Reporting Ratio calculated?",
+      "expected_pts": [
+        "PRR",
+        "formula",
+        "a/(a+c)",
+        "b/(b+d)",
+        "2x2 table"
+      ],
+      "source_note": "Guidelines/Evans Criteria PRR Signal Detection.md",
+      "answer_key": "(a/(a+c)) / (b/(b+d)) where a=drug+reaction cases, b=other drugs+reaction, c=drug+other reactions, d=other drugs+other reactions"
+    },
+    {
+      "id": "SIG-03",
+      "module": "signal_detection",
+      "question": "What does a PRR of 1.0 indicate?",
+      "expected_pts": [
+        "PRR",
+        "1.0",
+        "background",
+        "no signal",
+        "same rate"
+      ],
+      "source_note": "Guidelines/Evans Criteria PRR Signal Detection.md",
+      "answer_key": "Reaction is reported at the same rate as the background \u2014 no disproportionate reporting signal"
+    },
+    {
+      "id": "SIG-04",
+      "module": "signal_detection",
+      "question": "What is confounding by indication and why is it important for last-resort antibiotics?",
+      "expected_pts": [
+        "confounding by indication",
+        "last-resort",
+        "sicker",
+        "mortality",
+        "bias"
+      ],
+      "source_note": "Guidelines/Evans Criteria PRR Signal Detection.md",
+      "answer_key": "Patients receiving last-resort drugs are inherently sicker, making mortality-related PRRs appear elevated without indicating a true causal signal"
+    },
+    {
+      "id": "SIG-05",
+      "module": "signal_detection",
+      "question": "What is the Weber effect in FAERS signal detection?",
+      "expected_pts": [
+        "Weber effect",
+        "reporting rates",
+        "lifecycle",
+        "time",
+        "new drug"
+      ],
+      "source_note": "Guidelines/Evans Criteria PRR Signal Detection.md",
+      "answer_key": "Reporting rates for adverse events tend to be highest in the first two years after drug approval and decline thereafter"
+    },
+    {
+      "id": "SIG-06",
+      "module": "signal_detection",
+      "question": "What is the masking effect (competition bias) in disproportionality analysis?",
+      "expected_pts": [
+        "masking",
+        "competition bias",
+        "strong signal",
+        "suppress",
+        "weaker signal"
+      ],
+      "source_note": "Guidelines/Evans Criteria PRR Signal Detection.md",
+      "answer_key": "A very strong signal for one drug-reaction pair can suppress (mask) detection of weaker signals for the same reaction"
+    },
+    {
+      "id": "MEDDRA-01",
+      "module": "meddra_coder",
+      "question": "What is the MedDRA hierarchy from lowest to highest level of granularity?",
+      "expected_pts": [
+        "LLT",
+        "PT",
+        "HLT",
+        "HLGT",
+        "SOC",
+        "hierarchy"
+      ],
+      "source_note": "Guidelines/MedDRA Coding Conventions.md",
+      "answer_key": "LLT (Lowest Level Term) \u2192 PT (Preferred Term) \u2192 HLT (High Level Term) \u2192 HLGT (High Level Group Term) \u2192 SOC (System Organ Class)"
+    },
+    {
+      "id": "MEDDRA-02",
+      "module": "meddra_coder",
+      "question": "At what level of the MedDRA hierarchy are adverse events coded for regulatory reporting?",
+      "expected_pts": [
+        "Preferred Term",
+        "PT",
+        "coding level"
+      ],
+      "source_note": "Guidelines/MedDRA Coding Conventions.md",
+      "answer_key": "Adverse events are coded at the Preferred Term (PT) level for regulatory reporting"
+    },
+    {
+      "id": "MEDDRA-03",
+      "module": "meddra_coder",
+      "question": "How should 'drug didn't work' be coded in MedDRA?",
+      "expected_pts": [
+        "Drug ineffective",
+        "PT",
+        "MedDRA"
+      ],
+      "source_note": "Guidelines/MedDRA Coding Conventions.md",
+      "answer_key": "Drug ineffective (PT) under SOC: General disorders and administration site conditions"
+    },
+    {
+      "id": "MEDDRA-04",
+      "module": "meddra_coder",
+      "question": "What is the difference between Anaphylaxis and Anaphylactic reaction as MedDRA PTs?",
+      "expected_pts": [
+        "Anaphylaxis",
+        "Anaphylactic reaction",
+        "MedDRA",
+        "PT"
+      ],
+      "source_note": "Guidelines/MedDRA Coding Conventions.md",
+      "answer_key": "Anaphylaxis denotes the full clinical syndrome; Anaphylactic reaction may be used when the reporter describes a reaction without full diagnostic criteria being met"
+    },
+    {
+      "id": "ICSR-01",
+      "module": "icsr_generator",
+      "question": "What structure should an E2B(R3)-compliant ICSR narrative follow?",
+      "expected_pts": [
+        "narrative",
+        "E2B",
+        "patient demographics",
+        "drug exposure",
+        "adverse event",
+        "outcome"
+      ],
+      "source_note": "Guidelines/ICH E2B(R3) - Electronic Transmission.md",
+      "answer_key": "Patient demographics/history, drug exposure details, adverse event description and course, treatment/outcome, causality assessment"
+    },
+    {
+      "id": "ICSR-02",
+      "module": "icsr_generator",
+      "question": "When should a case be classified as unexpected in ICSR processing?",
+      "expected_pts": [
+        "unexpected",
+        "SmPC",
+        "Investigator Brochure",
+        "product information",
+        "nature",
+        "severity"
+      ],
+      "source_note": "Guidelines/ICH E2A - Clinical Safety Data.md",
+      "answer_key": "When nature, severity, specificity, or outcome is not consistent with the applicable product information (SmPC or IB)"
+    },
+    {
+      "id": "ICSR-03",
+      "module": "icsr_generator",
+      "question": "How is de-challenge documented in an ICSR narrative?",
+      "expected_pts": [
+        "de-challenge",
+        "drug withdrawn",
+        "reaction resolved",
+        "narrative"
+      ],
+      "source_note": "Guidelines/ICH E2B(R3) - Electronic Transmission.md",
+      "answer_key": "Document whether the adverse event resolved or improved following drug withdrawal, and the timeframe of resolution"
+    },
+    {
+      "id": "ICSR-04",
+      "module": "icsr_generator",
+      "question": "What seriousness criteria apply when a patient is hospitalized due to an adverse event?",
+      "expected_pts": [
+        "hospitalization",
+        "serious",
+        "E2A",
+        "inpatient"
+      ],
+      "source_note": "Guidelines/ICH E2A - Clinical Safety Data.md",
+      "answer_key": "Requires inpatient hospitalization or prolongation of existing hospitalization \u2014 meets ICH E2A seriousness criterion"
+    },
+    {
+      "id": "LIT-01",
+      "module": "lit_monitor",
+      "question": "What is the minimum recommended frequency of literature monitoring under EMA GVP?",
+      "expected_pts": [
+        "literature monitoring",
+        "GVP",
+        "frequency",
+        "weekly",
+        "continuous"
+      ],
+      "source_note": "Guidelines/EMA GVP Module VI - Signal Management.md",
+      "answer_key": "Continuous monitoring with at minimum weekly review for key data sources"
+    },
+    {
+      "id": "LIT-02",
+      "module": "lit_monitor",
+      "question": "What literature sources should be monitored for pharmacovigilance signals?",
+      "expected_pts": [
+        "PubMed",
+        "MEDLINE",
+        "EMBASE",
+        "EMA",
+        "literature",
+        "sources"
+      ],
+      "source_note": "Guidelines/EMA GVP Module VI - Signal Management.md",
+      "answer_key": "MEDLINE/PubMed, EMBASE, local literature, EMA communications, other regional databases"
+    },
+    {
+      "id": "LIT-03",
+      "module": "lit_monitor",
+      "question": "How does literature monitoring contribute to the PSUR/PBRER?",
+      "expected_pts": [
+        "PSUR",
+        "PBRER",
+        "literature",
+        "safety",
+        "periodic"
+      ],
+      "source_note": "Guidelines/ICH E2E - Pharmacovigilance Planning.md",
+      "answer_key": "Literature review findings are included in the safety evaluation section and may generate new signals requiring discussion in the PSUR benefit-risk evaluation"
+    },
+    {
+      "id": "LIT-04",
+      "module": "lit_monitor",
+      "question": "What is signal validation in the context of GVP Module VI?",
+      "expected_pts": [
+        "signal validation",
+        "sufficient grounds",
+        "signal assessment",
+        "individual case reports"
+      ],
+      "source_note": "Guidelines/EMA GVP Module VI - Signal Management.md",
+      "answer_key": "Evaluating whether examination of individual case reports and summaries provides sufficient grounds to recommend signal assessment"
+    },
+    {
+      "id": "LIT-05",
+      "module": "lit_monitor",
+      "question": "Under what circumstances does a literature finding require expedited reporting?",
+      "expected_pts": [
+        "expedited",
+        "literature",
+        "unexpected",
+        "serious",
+        "SUSAR"
+      ],
+      "source_note": "Guidelines/ICH E2A - Clinical Safety Data.md",
+      "answer_key": "Published case reports meeting SUSAR criteria (serious + unexpected) require expedited reporting within 15 days (or 7 days if fatal/life-threatening)"
+    },
+    {
+      "id": "ARCH-01",
+      "module": "regulatory_qa",
+      "question": "What is the regulatory basis for requiring a Periodic Safety Update Report?",
+      "expected_pts": [
+        "PSUR",
+        "ICH E2C",
+        "periodic",
+        "benefit-risk"
+      ],
+      "answer_key": "ICH E2C(R2) PBRER guideline \u2014 marketed products must submit periodic reports summarizing benefit-risk evaluation at defined intervals",
+      "source_notes": [
+        "Guidelines/EMA/EMA GVP Module V - Risk Management Systems.md",
+        "Guidelines/EMA/EMA GVP Module VII - Periodic Safety Reports.md",
+        "Guidelines/ICH E2E - Pharmacovigilance Planning.md"
+      ]
+    },
+    {
+      "id": "ARCH-02",
+      "module": "regulatory_qa",
+      "question": "What methodological guideline is the PRR approach aligned with for signal detection?",
+      "expected_pts": [
+        "ICH E2E",
+        "signal detection",
+        "quantitative",
+        "PRR",
+        "methodology"
+      ],
+      "source_note": "Guidelines/Evans Criteria PRR Signal Detection.md",
+      "answer_key": "ICH E2E Pharmacovigilance Planning \u2014 signal detection methodology section recommends quantitative statistical methods including PRR"
+    }
+  ]
+}

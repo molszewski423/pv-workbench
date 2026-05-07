@@ -1,0 +1,646 @@
+[
+  {
+    "reaction_pt": "parainfluenzae virus infection",
+    "drug_cases": 7,
+    "prr": 28.18,
+    "chi2": 40.85,
+    "signal": true
+  },
+  {
+    "reaction_pt": "therapeutic product effect incomplete",
+    "drug_cases": 3,
+    "prr": 24.155,
+    "chi2": 16.66,
+    "signal": true
+  },
+  {
+    "reaction_pt": "complications of transplanted lung",
+    "drug_cases": 3,
+    "prr": 24.155,
+    "chi2": 16.66,
+    "signal": true
+  },
+  {
+    "reaction_pt": "ischaemic hepatitis",
+    "drug_cases": 3,
+    "prr": 24.155,
+    "chi2": 16.66,
+    "signal": true
+  },
+  {
+    "reaction_pt": "therapy non-responder",
+    "drug_cases": 11,
+    "prr": 17.713,
+    "chi2": 54.36,
+    "signal": true
+  },
+  {
+    "reaction_pt": "pneumonia pseudomonal",
+    "drug_cases": 8,
+    "prr": 16.103,
+    "chi2": 37.85,
+    "signal": true
+  },
+  {
+    "reaction_pt": "treatment failure",
+    "drug_cases": 54,
+    "prr": 9.881,
+    "chi2": 196.97,
+    "signal": true
+  },
+  {
+    "reaction_pt": "rhinorrhoea",
+    "drug_cases": 7,
+    "prr": 9.393,
+    "chi2": 24.29,
+    "signal": true
+  },
+  {
+    "reaction_pt": "death",
+    "drug_cases": 109,
+    "prr": 9.336,
+    "chi2": 389.77,
+    "signal": true
+  },
+  {
+    "reaction_pt": "abdominal infection",
+    "drug_cases": 3,
+    "prr": 8.052,
+    "chi2": 9.27,
+    "signal": true
+  },
+  {
+    "reaction_pt": "ototoxicity",
+    "drug_cases": 9,
+    "prr": 7.246,
+    "chi2": 25.59,
+    "signal": true
+  },
+  {
+    "reaction_pt": "lipase increased",
+    "drug_cases": 5,
+    "prr": 6.71,
+    "chi2": 13.28,
+    "signal": true
+  },
+  {
+    "reaction_pt": "intestinal ischaemia",
+    "drug_cases": 3,
+    "prr": 6.039,
+    "chi2": 7.22,
+    "signal": true
+  },
+  {
+    "reaction_pt": "enterococcal sepsis",
+    "drug_cases": 3,
+    "prr": 6.039,
+    "chi2": 7.22,
+    "signal": true
+  },
+  {
+    "reaction_pt": "drug ineffective for unapproved indication",
+    "drug_cases": 12,
+    "prr": 5.085,
+    "chi2": 24.27,
+    "signal": true
+  },
+  {
+    "reaction_pt": "nephropathy toxic",
+    "drug_cases": 9,
+    "prr": 4.529,
+    "chi2": 15.91,
+    "signal": true
+  },
+  {
+    "reaction_pt": "encephalitis",
+    "drug_cases": 6,
+    "prr": 4.026,
+    "chi2": 9.13,
+    "signal": true
+  },
+  {
+    "reaction_pt": "lymphoma",
+    "drug_cases": 3,
+    "prr": 3.451,
+    "chi2": 3.66,
+    "signal": false
+  },
+  {
+    "reaction_pt": "myoclonus",
+    "drug_cases": 5,
+    "prr": 3.097,
+    "chi2": 5.14,
+    "signal": true
+  },
+  {
+    "reaction_pt": "lung abscess",
+    "drug_cases": 3,
+    "prr": 3.019,
+    "chi2": 2.95,
+    "signal": false
+  },
+  {
+    "reaction_pt": "haemolytic anaemia",
+    "drug_cases": 4,
+    "prr": 2.928,
+    "chi2": 3.73,
+    "signal": false
+  },
+  {
+    "reaction_pt": "pneumonitis",
+    "drug_cases": 8,
+    "prr": 2.684,
+    "chi2": 6.37,
+    "signal": true
+  },
+  {
+    "reaction_pt": "drug resistance",
+    "drug_cases": 60,
+    "prr": 2.64,
+    "chi2": 48.11,
+    "signal": true
+  },
+  {
+    "reaction_pt": "pathogen resistance",
+    "drug_cases": 31,
+    "prr": 2.573,
+    "chi2": 23.12,
+    "signal": true
+  },
+  {
+    "reaction_pt": "bradycardia",
+    "drug_cases": 6,
+    "prr": 2.543,
+    "chi2": 4.29,
+    "signal": true
+  },
+  {
+    "reaction_pt": "influenza",
+    "drug_cases": 4,
+    "prr": 2.477,
+    "chi2": 2.7,
+    "signal": false
+  },
+  {
+    "reaction_pt": "pseudomonas infection",
+    "drug_cases": 15,
+    "prr": 2.415,
+    "chi2": 9.68,
+    "signal": true
+  },
+  {
+    "reaction_pt": "acute myeloid leukaemia",
+    "drug_cases": 5,
+    "prr": 2.368,
+    "chi2": 3.07,
+    "signal": false
+  },
+  {
+    "reaction_pt": "pancreatitis acute",
+    "drug_cases": 5,
+    "prr": 2.237,
+    "chi2": 2.69,
+    "signal": false
+  },
+  {
+    "reaction_pt": "generalised tonic-clonic seizure",
+    "drug_cases": 3,
+    "prr": 2.196,
+    "chi2": 1.54,
+    "signal": false
+  },
+  {
+    "reaction_pt": "coagulopathy",
+    "drug_cases": 10,
+    "prr": 2.119,
+    "chi2": 4.72,
+    "signal": true
+  },
+  {
+    "reaction_pt": "chromaturia",
+    "drug_cases": 4,
+    "prr": 1.894,
+    "chi2": 1.37,
+    "signal": false
+  },
+  {
+    "reaction_pt": "cholangitis",
+    "drug_cases": 4,
+    "prr": 1.789,
+    "chi2": 1.14,
+    "signal": false
+  },
+  {
+    "reaction_pt": "bacteraemia",
+    "drug_cases": 11,
+    "prr": 1.703,
+    "chi2": 2.67,
+    "signal": false
+  },
+  {
+    "reaction_pt": "posterior reversible encephalopathy syndrome",
+    "drug_cases": 4,
+    "prr": 1.695,
+    "chi2": 0.95,
+    "signal": false
+  },
+  {
+    "reaction_pt": "disease recurrence",
+    "drug_cases": 4,
+    "prr": 1.695,
+    "chi2": 0.95,
+    "signal": false
+  },
+  {
+    "reaction_pt": "stenotrophomonas infection",
+    "drug_cases": 4,
+    "prr": 1.61,
+    "chi2": 0.77,
+    "signal": false
+  },
+  {
+    "reaction_pt": "liver injury",
+    "drug_cases": 3,
+    "prr": 1.61,
+    "chi2": 0.58,
+    "signal": false
+  },
+  {
+    "reaction_pt": "fungaemia",
+    "drug_cases": 4,
+    "prr": 1.61,
+    "chi2": 0.77,
+    "signal": false
+  },
+  {
+    "reaction_pt": "erythema",
+    "drug_cases": 8,
+    "prr": 1.571,
+    "chi2": 1.4,
+    "signal": false
+  },
+  {
+    "reaction_pt": "cough",
+    "drug_cases": 9,
+    "prr": 1.542,
+    "chi2": 1.45,
+    "signal": false
+  },
+  {
+    "reaction_pt": "cellulitis",
+    "drug_cases": 7,
+    "prr": 1.523,
+    "chi2": 1.07,
+    "signal": false
+  },
+  {
+    "reaction_pt": "myelodysplastic syndrome",
+    "drug_cases": 3,
+    "prr": 1.51,
+    "chi2": 0.44,
+    "signal": false
+  },
+  {
+    "reaction_pt": "abscess",
+    "drug_cases": 3,
+    "prr": 1.51,
+    "chi2": 0.44,
+    "signal": false
+  },
+  {
+    "reaction_pt": "systemic candida",
+    "drug_cases": 5,
+    "prr": 1.491,
+    "chi2": 0.69,
+    "signal": false
+  },
+  {
+    "reaction_pt": "encephalopathy",
+    "drug_cases": 8,
+    "prr": 1.431,
+    "chi2": 0.89,
+    "signal": false
+  },
+  {
+    "reaction_pt": "multiple organ dysfunction syndrome",
+    "drug_cases": 28,
+    "prr": 1.409,
+    "chi2": 2.93,
+    "signal": false
+  },
+  {
+    "reaction_pt": "hepatic enzyme increased",
+    "drug_cases": 7,
+    "prr": 1.375,
+    "chi2": 0.62,
+    "signal": false
+  },
+  {
+    "reaction_pt": "leukocytosis",
+    "drug_cases": 4,
+    "prr": 1.342,
+    "chi2": 0.3,
+    "signal": false
+  },
+  {
+    "reaction_pt": "toxicity to various agents",
+    "drug_cases": 9,
+    "prr": 1.208,
+    "chi2": 0.28,
+    "signal": false
+  },
+  {
+    "reaction_pt": "hepatotoxicity",
+    "drug_cases": 4,
+    "prr": 1.193,
+    "chi2": 0.11,
+    "signal": false
+  },
+  {
+    "reaction_pt": "product use in unapproved indication",
+    "drug_cases": 8,
+    "prr": 1.171,
+    "chi2": 0.18,
+    "signal": false
+  },
+  {
+    "reaction_pt": "septic shock",
+    "drug_cases": 29,
+    "prr": 1.081,
+    "chi2": 0.16,
+    "signal": false
+  },
+  {
+    "reaction_pt": "renal impairment",
+    "drug_cases": 15,
+    "prr": 1.05,
+    "chi2": 0.03,
+    "signal": false
+  },
+  {
+    "reaction_pt": "peritonitis",
+    "drug_cases": 4,
+    "prr": 1.039,
+    "chi2": 0.01,
+    "signal": false
+  },
+  {
+    "reaction_pt": "renal failure",
+    "drug_cases": 17,
+    "prr": 1.021,
+    "chi2": 0.01,
+    "signal": false
+  },
+  {
+    "reaction_pt": "blood alkaline phosphatase increased",
+    "drug_cases": 4,
+    "prr": 1.006,
+    "chi2": 0.0,
+    "signal": false
+  },
+  {
+    "reaction_pt": "cholestasis",
+    "drug_cases": 5,
+    "prr": 1.006,
+    "chi2": 0.0,
+    "signal": false
+  },
+  {
+    "reaction_pt": "disease progression",
+    "drug_cases": 5,
+    "prr": 1.006,
+    "chi2": 0.0,
+    "signal": false
+  },
+  {
+    "reaction_pt": "delirium",
+    "drug_cases": 5,
+    "prr": 1.006,
+    "chi2": 0.0,
+    "signal": false
+  },
+  {
+    "reaction_pt": "toxic epidermal necrolysis",
+    "drug_cases": 12,
+    "prr": 0.996,
+    "chi2": 0.0,
+    "signal": false
+  },
+  {
+    "reaction_pt": "acute respiratory failure",
+    "drug_cases": 4,
+    "prr": 0.976,
+    "chi2": 0.0,
+    "signal": false
+  },
+  {
+    "reaction_pt": "pneumonia",
+    "drug_cases": 32,
+    "prr": 0.969,
+    "chi2": 0.03,
+    "signal": false
+  },
+  {
+    "reaction_pt": "acute kidney injury",
+    "drug_cases": 27,
+    "prr": 0.962,
+    "chi2": 0.04,
+    "signal": false
+  },
+  {
+    "reaction_pt": "thrombocytopenia",
+    "drug_cases": 18,
+    "prr": 0.878,
+    "chi2": 0.28,
+    "signal": false
+  },
+  {
+    "reaction_pt": "sepsis",
+    "drug_cases": 28,
+    "prr": 0.867,
+    "chi2": 0.54,
+    "signal": false
+  },
+  {
+    "reaction_pt": "neutropenia",
+    "drug_cases": 14,
+    "prr": 0.86,
+    "chi2": 0.29,
+    "signal": false
+  },
+  {
+    "reaction_pt": "disseminated intravascular coagulation",
+    "drug_cases": 8,
+    "prr": 0.859,
+    "chi2": 0.17,
+    "signal": false
+  },
+  {
+    "reaction_pt": "hyperkalaemia",
+    "drug_cases": 3,
+    "prr": 0.805,
+    "chi2": 0.13,
+    "signal": false
+  },
+  {
+    "reaction_pt": "fungal infection",
+    "drug_cases": 3,
+    "prr": 0.779,
+    "chi2": 0.17,
+    "signal": false
+  },
+  {
+    "reaction_pt": "infection",
+    "drug_cases": 7,
+    "prr": 0.772,
+    "chi2": 0.44,
+    "signal": false
+  },
+  {
+    "reaction_pt": "hypertension",
+    "drug_cases": 3,
+    "prr": 0.69,
+    "chi2": 0.39,
+    "signal": false
+  },
+  {
+    "reaction_pt": "pulmonary embolism",
+    "drug_cases": 3,
+    "prr": 0.69,
+    "chi2": 0.39,
+    "signal": false
+  },
+  {
+    "reaction_pt": "general physical health deterioration",
+    "drug_cases": 6,
+    "prr": 0.68,
+    "chi2": 0.84,
+    "signal": false
+  },
+  {
+    "reaction_pt": "hepatic function abnormal",
+    "drug_cases": 7,
+    "prr": 0.633,
+    "chi2": 1.4,
+    "signal": false
+  },
+  {
+    "reaction_pt": "acute respiratory distress syndrome",
+    "drug_cases": 4,
+    "prr": 0.596,
+    "chi2": 1.03,
+    "signal": false
+  },
+  {
+    "reaction_pt": "febrile neutropenia",
+    "drug_cases": 13,
+    "prr": 0.591,
+    "chi2": 3.54,
+    "signal": false
+  },
+  {
+    "reaction_pt": "pneumonia aspiration",
+    "drug_cases": 3,
+    "prr": 0.525,
+    "chi2": 1.22,
+    "signal": false
+  },
+  {
+    "reaction_pt": "epilepsy",
+    "drug_cases": 3,
+    "prr": 0.503,
+    "chi2": 1.4,
+    "signal": false
+  },
+  {
+    "reaction_pt": "aspartate aminotransferase increased",
+    "drug_cases": 4,
+    "prr": 0.488,
+    "chi2": 2.05,
+    "signal": false
+  },
+  {
+    "reaction_pt": "drug reaction with eosinophilia and systemic symptoms",
+    "drug_cases": 8,
+    "prr": 0.421,
+    "chi2": 6.23,
+    "signal": false
+  },
+  {
+    "reaction_pt": "white blood cell count decreased",
+    "drug_cases": 4,
+    "prr": 0.418,
+    "chi2": 3.12,
+    "signal": false
+  },
+  {
+    "reaction_pt": "hypersensitivity",
+    "drug_cases": 3,
+    "prr": 0.416,
+    "chi2": 2.36,
+    "signal": false
+  },
+  {
+    "reaction_pt": "rash",
+    "drug_cases": 8,
+    "prr": 0.416,
+    "chi2": 6.44,
+    "signal": false
+  },
+  {
+    "reaction_pt": "respiratory failure",
+    "drug_cases": 8,
+    "prr": 0.372,
+    "chi2": 8.36,
+    "signal": false
+  },
+  {
+    "reaction_pt": "alanine aminotransferase increased",
+    "drug_cases": 4,
+    "prr": 0.366,
+    "chi2": 4.27,
+    "signal": false
+  },
+  {
+    "reaction_pt": "nausea",
+    "drug_cases": 5,
+    "prr": 0.282,
+    "chi2": 9.1,
+    "signal": false
+  },
+  {
+    "reaction_pt": "leukopenia",
+    "drug_cases": 3,
+    "prr": 0.274,
+    "chi2": 5.65,
+    "signal": false
+  },
+  {
+    "reaction_pt": "anaemia",
+    "drug_cases": 5,
+    "prr": 0.26,
+    "chi2": 10.52,
+    "signal": false
+  },
+  {
+    "reaction_pt": "diarrhoea",
+    "drug_cases": 5,
+    "prr": 0.241,
+    "chi2": 11.97,
+    "signal": false
+  },
+  {
+    "reaction_pt": "hypotension",
+    "drug_cases": 3,
+    "prr": 0.159,
+    "chi2": 13.47,
+    "signal": false
+  },
+  {
+    "reaction_pt": "pyrexia",
+    "drug_cases": 7,
+    "prr": 0.131,
+    "chi2": 43.16,
+    "signal": false
+  }
+]

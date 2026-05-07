@@ -1,0 +1,26 @@
+.venv/
+chroma_db/
+output/
+!faers_pipeline/output/
+!faers_pipeline/output/**
+__pycache__/
+*.pyc
+.env
+*.log
+*.egg-info/
+state.json
+src/context/session_log.md
+.claude/
+
+# Obsidian workspace state (user-specific, not project)
+vault/.obsidian/workspace.json
+vault/.obsidian/workspace-mobile.json
+vault/.obsidian/cache
+
+# Data inputs (too large for git)
+data/*.pdf
+data/*.csv
+data/*.json
+
+# Benchmark outputs
+tests/benchmark/results/
