@@ -11,6 +11,9 @@ __pycache__/
 state.json
 src/context/session_log.md
 .claude/
+CLAUDE.md
+.local_config/
+projects.json
 
 # Obsidian workspace state (user-specific, not project)
 vault/.obsidian/workspace.json

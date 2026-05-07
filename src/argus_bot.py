@@ -63,7 +63,8 @@ logger = logging.getLogger("argus")
 # ─── Context loading ──────────────────────────────────────────────────────────
 
 _CONTEXT_DIR = _SRC / "context"
-_MICHAEL_CONTEXT_FILE = _CONTEXT_DIR / "michael_context.md"
+_LOCAL_CONFIG_DIR = _SRC.parent / ".local_config"
+_MICHAEL_CONTEXT_FILE = _LOCAL_CONFIG_DIR / "michael_context.md"
 _SESSION_LOG_FILE = _CONTEXT_DIR / "session_log.md"
 
 def _load_michael_context() -> str:
