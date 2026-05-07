@@ -53,6 +53,7 @@ sys.path.insert(0, str(_SRC))
 
 from config import REASON_MODEL, DRAFT_MODEL, OLLAMA_BASE_URL, TOP_K
 import shared_state
+from projects import list_projects, load_project, ProjectConfig
 
 logging.basicConfig(
     level=logging.INFO,
@@ -71,6 +72,46 @@ def _load_michael_context() -> str:
     if _MICHAEL_CONTEXT_FILE.exists():
         return _MICHAEL_CONTEXT_FILE.read_text()
     return ""
+
+
+def _build_workbench_context() -> str:
+    """Build a live workbench context string for injection into every LLM prompt.
+
+    Includes: active drug, all configured projects, module status, vault size.
+    """
+    active = shared_state.get_active_drug()
+    lines = [
+        "## PV AI Workbench — Live Context",
+        f"**Active drug**: {active}",
+        "",
+        "**Configured projects (drugs under surveillance)**:",
+    ]
+    try:
+        for proj in list_projects():
+            marker = " ← active" if proj.drug_name == active else ""
+            lines.append(f"  - {proj.drug_name.capitalize()} (comparator: {proj.comparator}){marker}")
+    except Exception:
+        lines.append("  (project list unavailable)")
+
+    lines += [
+        "",
+        "**5 Modules Available**:",
+        "  1. Regulatory Q&A — ICH/EMA/FDA guidelines RAG (gemma4:26b)",
+        "  2. MedDRA Coder — PT deliberation with reviewer flag (gemma4:26b)",
+        "  3. Signal Detection — FAERS PRR/chi² + Evans criteria + temporal cohort analysis",
+        "  4. ICSR Generator — E2B(R3) narrative drafts (gemma4:e4b)",
+        "  5. Lit Monitor — PubMed search + Discord digest (gemma4:e4b)",
+        "",
+        "**Key completed analyses**:",
+        "  - Vancomycin nephrotoxicity: Pre-2020 (trough era) vs Post-2020 (AUC/MIC era)",
+        "    PRE-2020: AKI PRR=2.16(signal), oliguria PRR=11.97(signal), RTA PRR=18.10(signal)",
+        "    POST-2020: AKI PRR=1.95(sub-threshold), oliguria PRR=1.12(resolved), RTA PRR=10.51(attenuating)",
+        "    → 2020 AUC/MIC guideline associated with meaningful nephrotoxicity signal reduction",
+        "  - Cefiderocol: mortality/sepsis signals analyzed (confounding by indication documented)",
+        "",
+        "**Discord channels**: #regulatory-qa, #signal-detection, #meddra-coding, #icsr-generator, #lit-monitor",
+    ]
+    return "\n".join(lines)
 
 def _append_session_log(entry: str):
     try:
@@ -188,15 +229,11 @@ def _module_status() -> dict[str, str]:
                 from modules.signal_detection import interpret_signals
                 statuses[name] = "✅ Ready"
             elif name == "icsr_generator":
-                from modules.icsr_generator import generate_icsr_narrative
-                try:
-                    generate_icsr_narrative.__wrapped__
-                    statuses[name] = "🔨 Stub"
-                except AttributeError:
-                    statuses[name] = "✅ Ready" if "NotImplementedError" not in str(generate_icsr_narrative) else "🔨 Stub"
+                from modules.icsr_generator import generate_icsr_narrative, CaseData
+                statuses[name] = "✅ Ready"
             elif name == "lit_monitor":
-                from modules.lit_monitor import generate_digest
-                statuses[name] = "🔨 Stub"
+                from modules.lit_monitor import generate_digest, search_pubmed
+                statuses[name] = "✅ Ready"
         except Exception as e:
             statuses[name] = f"❌ Error: {type(e).__name__}"
     return statuses
@@ -253,7 +290,10 @@ async def _classify_intent(message_text: str) -> str:
     from langchain_core.output_parsers import StrOutputParser
 
     llm = ChatOllama(model=REASON_MODEL, base_url=OLLAMA_BASE_URL, temperature=0)
-    system_prompt = f"{INTENT_PROMPT}\n\n## User Context\n{_MICHAEL_CONTEXT}" if _MICHAEL_CONTEXT else INTENT_PROMPT
+    workbench_ctx = _build_workbench_context()
+    system_prompt = f"{INTENT_PROMPT}\n\n{workbench_ctx}"
+    if _MICHAEL_CONTEXT:
+        system_prompt += f"\n\n## User Identity\n{_MICHAEL_CONTEXT}"
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
         ("human", "{input}"),
@@ -421,9 +461,18 @@ async def _route_message(message: discord.Message, route: str):
             if hits:
                 context_text = "\n\nRelevant Vault Context:\n" + "\n".join([f"- {h['text']}" for h in hits])
 
+            workbench_ctx = _build_workbench_context()
             user_context = f"\n\n## Who You Are Talking To\n{_MICHAEL_CONTEXT}" if _MICHAEL_CONTEXT else ""
             llm = ChatOllama(model=REASON_MODEL, base_url=OLLAMA_BASE_URL)
-            sys_msg = SystemMessage(content=f"You are Argus, the Junior Analyst for the PV AI Workbench. You assist Senior Reviewer Michael Olszewski (PharmD, BCPS, BCCCP, 18 years ICU). Always address him by name or as Senior Reviewer. Explain PV regulations with clinical context — the why, not just the what.{user_context}{context_text}")
+            sys_msg = SystemMessage(content=(
+                f"You are Argus, the Junior Analyst for the PV AI Workbench. "
+                f"You assist Senior Reviewer Michael Olszewski (PharmD, BCPS, BCCCP, 18 years ICU). "
+                f"Always address him by name or as Senior Reviewer. "
+                f"Explain PV concepts with clinical context — the why, not just the what.\n\n"
+                f"{workbench_ctx}"
+                f"{user_context}"
+                f"{context_text}"
+            ))
             
             response = await asyncio.to_thread(llm.invoke, [sys_msg, HumanMessage(content=query)])
             content = response.content
@@ -505,9 +554,28 @@ async def cmd_ask(ctx: commands.Context, *, query: str):
 
 @bot.command(name="drug")
 async def cmd_drug(ctx: commands.Context, *, drug_name: str):
-    """Set active drug for this server session. Usage: !drug cefiderocol"""
+    """Set active drug for this server session. Usage: !drug vancomycin"""
     shared_state.set_active_drug(drug_name.strip())
     await ctx.reply(f"✅ Active drug set to **{drug_name}** for this session.")
+
+
+@bot.command(name="projects")
+async def cmd_projects(ctx: commands.Context):
+    """List all configured projects. Use !drug <name> to switch."""
+    try:
+        projects = list_projects()
+        active = shared_state.get_active_drug()
+        if not projects:
+            await ctx.reply("No projects configured in projects.json.")
+            return
+        lines = ["**Configured PV Projects**", ""]
+        for p in projects:
+            marker = " ◀ active" if p.drug_name == active else ""
+            lines.append(f"• **{p.drug_name.capitalize()}** — comparator: {p.comparator}{marker}")
+        lines += ["", "Use `!drug <name>` to switch active drug."]
+        await ctx.reply(embed=_make_embed("Project Registry", "\n".join(lines)))
+    except Exception as e:
+        await ctx.reply(f"❌ Could not load projects: `{e}`")
 
 
 @bot.command(name="status")
@@ -537,10 +605,11 @@ async def cmd_help(ctx: commands.Context):
     """Command reference."""
     text = """
 **General**
-`!ping`         — bot status and model info
-`!status`       — module health check
-`!drug <name>`  — set active drug context
-`!help`         — this message
+`!ping`             — bot status and model info
+`!status`           — module health check
+`!drug <name>`      — set active drug context
+`!projects`         — list all configured projects
+`!help`             — this message
 
 **Queries**
 `!ask <question>`         — RAG query (all sources)
