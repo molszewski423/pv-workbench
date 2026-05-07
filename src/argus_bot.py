@@ -255,16 +255,74 @@ def _get_drug() -> str:
     return shared_state.get_active_drug()
 
 
-def _truncate(text: str, max_len: int = 1900) -> str:
+_DISCORD_MSG_LIMIT = 2000
+_DISCORD_EMBED_LIMIT = 4096
+_FOOTER = "Argus · PV Signal Intelligence Workbench · DRAFT — Senior Reviewer Oversight Required"
+
+
+def _split_text(text: str, max_len: int = _DISCORD_MSG_LIMIT) -> list[str]:
+    """Split text into chunks ≤ max_len, breaking on paragraph → newline → word boundaries."""
     if len(text) <= max_len:
-        return text
-    return text[:max_len - 3] + "..."
+        return [text]
+
+    chunks: list[str] = []
+    remaining = text
+    while len(remaining) > max_len:
+        # Try paragraph break first, then single newline, then last space
+        for sep in ("\n\n", "\n", " "):
+            cut = remaining.rfind(sep, 0, max_len)
+            if cut > 0:
+                chunks.append(remaining[:cut].rstrip())
+                remaining = remaining[cut:].lstrip()
+                break
+        else:
+            # No good break point — hard cut
+            chunks.append(remaining[:max_len])
+            remaining = remaining[max_len:]
+    if remaining:
+        chunks.append(remaining)
+    return chunks
+
+
+async def _send_long(dest, text: str, reference=None) -> None:
+    """Send text as one or more messages, respecting Discord's 2000-char limit."""
+    chunks = _split_text(text, _DISCORD_MSG_LIMIT - 10)  # leave headroom
+    for i, chunk in enumerate(chunks):
+        if i == 0 and reference is not None:
+            await reference.reply(chunk)
+        else:
+            await dest.send(chunk)
 
 
 def _make_embed(title: str, description: str, color: int = 0x3498db) -> discord.Embed:
-    embed = discord.Embed(title=title, description=description[:4096], color=color)
-    embed.set_footer(text="Argus · PV Signal Intelligence Workbench · DRAFT — Senior Reviewer Oversight Required")
+    embed = discord.Embed(title=title, description=description[:_DISCORD_EMBED_LIMIT], color=color)
+    embed.set_footer(text=_FOOTER)
     return embed
+
+
+def _make_embed_pages(title: str, description: str, color: int = 0x3498db) -> list[discord.Embed]:
+    """Return one or more embeds if description exceeds the 4096-char embed limit."""
+    chunks = _split_text(description, _DISCORD_EMBED_LIMIT)
+    embeds = []
+    for i, chunk in enumerate(chunks):
+        page_title = title if len(chunks) == 1 else f"{title} ({i + 1}/{len(chunks)})"
+        embed = discord.Embed(title=page_title, description=chunk, color=color)
+        embed.set_footer(text=_FOOTER)
+        embeds.append(embed)
+    return embeds
+
+
+async def _reply_embed(message: discord.Message, title: str, description: str, color: int = 0x3498db, extra_fields: list[tuple] | None = None) -> None:
+    """Send embed reply, paginating if description exceeds 4096 chars."""
+    pages = _make_embed_pages(title, description, color)
+    for i, embed in enumerate(pages):
+        if extra_fields and i == len(pages) - 1:
+            for name, value, inline in extra_fields:
+                embed.add_field(name=name, value=str(value)[:1024], inline=inline)
+        if i == 0:
+            await message.reply(embed=embed)
+        else:
+            await message.channel.send(embed=embed)
 
 
 async def _log_status(guild: discord.Guild | None, input_text: str, intent: str, model: str):
@@ -374,45 +432,42 @@ async def _route_message(message: discord.Message, route: str):
             await _log_status(message.guild, query, route, REASON_MODEL)
             fn = _load_regulatory_qa()
             result = await asyncio.to_thread(fn, query)
-            embed = _make_embed(
+            citations = "\n".join(f"• {c}" for c in result.citations[:5]) if result.citations else None
+            extra = [("Sources", citations, False)] if citations else None
+            await _reply_embed(
+                message,
                 f"Regulatory Q&A — {result.confidence} confidence",
                 result.answer,
                 color=0x2ecc71,
+                extra_fields=extra,
             )
-            if result.citations:
-                embed.add_field(
-                    name="Sources",
-                    value="\n".join(f"• {c}" for c in result.citations[:5]),
-                    inline=False,
-                )
-            await message.reply(embed=embed)
 
         elif route == "MEDDRA_CODING":
             await _log_status(message.guild, query, route, REASON_MODEL)
             fn = _load_meddra_coder()
             result = await asyncio.to_thread(fn, query)
             flag = "⚠️ Reviewer Required" if result.reviewer_flag else "✅ Low uncertainty"
-            embed = _make_embed(
+            body = f"**Primary PT**: {result.primary_pt}\n**SOC**: {result.soc}\n\n**Notes**: {result.coding_notes}"
+            alts = ", ".join(result.alternative_pts[:5]) if result.alternative_pts else None
+            extra = [("Alternative PTs", alts, False)] if alts else None
+            await _reply_embed(
+                message,
                 f"MedDRA Coding — {result.confidence} | {flag}",
-                f"**Primary PT**: {result.primary_pt}\n**SOC**: {result.soc}\n\n**Notes**: {result.coding_notes[:500]}",
+                body,
                 color=0xe74c3c if result.reviewer_flag else 0x27ae60,
+                extra_fields=extra,
             )
-            if result.alternative_pts:
-                embed.add_field(
-                    name="Alternative PTs",
-                    value=", ".join(result.alternative_pts[:5]),
-                    inline=False,
-                )
-            await message.reply(embed=embed)
 
         elif route == "SIGNAL_DETECTION":
             await _log_status(message.guild, query, route, REASON_MODEL)
             qv = _load_query_vault()
             hits = await asyncio.to_thread(qv, query, TOP_K, "Guidelines")
             if hits:
-                context = "\n".join(f"**{h['source_note']}** › {h['section_header']}\n{h['text'][:200]}" for h in hits[:3])
-                embed = _make_embed(f"Signal Context — {drug}", context, color=0xe67e22)
-                await message.reply(embed=embed)
+                context = "\n\n".join(
+                    f"**{h['source_note']}** › {h['section_header']}\n{h['text'][:300]}"
+                    for h in hits[:3]
+                )
+                await _reply_embed(message, f"Signal Context — {drug}", context, color=0xe67e22)
             else:
                 await message.reply("No relevant signal context found in vault.")
 
@@ -421,12 +476,7 @@ async def _route_message(message: discord.Message, route: str):
             from modules.icsr_generator import CaseData, generate_icsr_narrative
             case = CaseData(adverse_event=query, suspect_drug=drug)
             result = await asyncio.to_thread(generate_icsr_narrative, case)
-            embed = _make_embed(
-                f"ICSR Narrative Draft — {drug}",
-                result.narrative,
-                color=0x3498db,
-            )
-            await message.reply(embed=embed)
+            await _reply_embed(message, f"ICSR Narrative Draft — {drug}", result.narrative, color=0x3498db)
 
         elif route == "LIT_MONITOR":
             await _log_status(message.guild, query, route, DRAFT_MODEL)
@@ -435,12 +485,12 @@ async def _route_message(message: discord.Message, route: str):
             if results:
                 scored = await asyncio.to_thread(score_relevance, results, drug)
                 digest = await asyncio.to_thread(generate_digest, drug, scored)
-                embed = _make_embed(
+                await _reply_embed(
+                    message,
                     f"Literature Digest — {drug}",
                     digest.digest_text or "No relevant papers found for summary.",
                     color=0x9b59b6,
                 )
-                await message.reply(embed=embed)
             else:
                 await message.reply(f"No recent PubMed results for {drug}.")
 
@@ -454,7 +504,6 @@ async def _route_message(message: discord.Message, route: str):
             from langchain_ollama import ChatOllama
             from langchain_core.messages import HumanMessage, SystemMessage
 
-            # Use RAG to see if we know about the user or project
             qv = _load_query_vault()
             hits = await asyncio.to_thread(qv, query, 3, "Guidelines")
             context_text = ""
@@ -473,15 +522,9 @@ async def _route_message(message: discord.Message, route: str):
                 f"{user_context}"
                 f"{context_text}"
             ))
-            
+
             response = await asyncio.to_thread(llm.invoke, [sys_msg, HumanMessage(content=query)])
-            content = response.content
-            
-            # Truncate to Discord 2000 char limit
-            if len(content) > 1900:
-                content = content[:1900] + "\n\n*(Truncated due to length)*"
-            
-            await message.reply(content)
+            await _send_long(message.channel, response.content, reference=message)
 
     except Exception as e:
         logger.error(f"Route {route} error: {e}", exc_info=True)
@@ -535,18 +578,21 @@ async def cmd_ask(ctx: commands.Context, *, query: str):
             fn = _load_regulatory_qa()
             result = await asyncio.to_thread(fn, query)
             jur_label = f" [{jurisdiction}]" if jurisdiction else ""
-            embed = _make_embed(
+            citations = "\n".join(f"• {c}" for c in result.citations[:5]) if result.citations else None
+            extra = [("Sources", citations, False)] if citations else None
+            pages = _make_embed_pages(
                 f"Regulatory Q&A{jur_label} — {result.confidence}",
                 result.answer,
                 color=0x2ecc71,
             )
-            if result.citations:
-                embed.add_field(
-                    name="Sources",
-                    value="\n".join(f"• {c}" for c in result.citations[:5]),
-                    inline=False,
-                )
-            await ctx.reply(embed=embed)
+            for i, embed in enumerate(pages):
+                if extra and i == len(pages) - 1:
+                    for name, value, inline in extra:
+                        embed.add_field(name=name, value=str(value)[:1024], inline=inline)
+                if i == 0:
+                    await ctx.reply(embed=embed)
+                else:
+                    await ctx.send(embed=embed)
         except Exception as e:
             logger.error(f"!ask error: {e}", exc_info=True)
             await ctx.reply(f"❌ RAG query failed: `{type(e).__name__}: {str(e)[:300]}`")
