@@ -230,7 +230,7 @@ Domain breakdown: Regulatory(8/8) · Signal(7/7) · MedDRA(6/6) · ICSR(5/5) · 
 AI Output ──► is_draft=True ──► reviewer_flag=True ──► Senior Reviewer Sign-off
                                                               │
                                                     PharmD · BCPS · BCCCP
-                                                    18 years ICU/critical care
+                                                    20 years critical care and infectious disease
 ```
 
 The platform never makes final regulatory determinations. `is_draft` cannot be set to `False` by any module function — it is a design invariant, not a configuration option.
@@ -409,7 +409,7 @@ This is the methodology, not just the tool.
 
 ## About
 
-Built by a PharmD, BCPS, BCCCP with 18 years of ICU and critical care experience who got tired of waiting for enterprise PV platforms to catch up with what local AI can already do. The clinical judgment layer isn't a guardrail bolted on — it's the reason the system exists.
+Built by a PharmD, BCPS, BCCCP with 20 years of critical care and infectious disease experience who got tired of waiting for enterprise PV platforms to catch up with what local AI can already do. The clinical judgment layer isn't a guardrail bolted on — it's the reason the system exists.
 
 **Stack philosophy:** Local-first. No cloud dependencies for core function. Data stays on-machine. The 26B reasoning model runs on consumer hardware (RTX 5060 Ti) and outperforms cloud-hosted GPT-3.5-class models on structured clinical PV tasks.
 
