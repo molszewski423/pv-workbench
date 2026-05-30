@@ -1,0 +1,3 @@
+[lint]
+ignore = ["F401", "F811", "E501"]
+exclude = ["chroma_db"]
