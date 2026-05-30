@@ -14,64 +14,7 @@ PV consultants face a daily information overload: FAERS adverse event feeds, Pub
 
 ## System Architecture
 
-```mermaid
-graph TB
-    subgraph Sources[Data Sources]
-        FAERS[OpenFDA FAERS]
-        PubMed[PubMed Literature]
-        Vault[Obsidian Vault Guidelines]
-    end
-
-    subgraph RAG[RAG Pipeline]
-        Chunker[Markdown Chunker]
-        Embed[nomic-embed-text Embeddings]
-        ChromaDB[ChromaDB Vector Store]
-    end
-
-    subgraph LLMs[Local LLMs via Ollama]
-        G26b[gemma4 26b - Reasoning]
-        G4b[gemma4 e4b - Drafting]
-    end
-
-    subgraph Modules[PV Modules]
-        M1[Regulatory QA]
-        M2[MedDRA Coder]
-        M3[FAERS Signal Detection]
-        M4[ICSR Narrative Generator]
-        M5[Literature Monitor]
-    end
-
-    subgraph Output[Outputs]
-        Dash[Streamlit Dashboard]
-        Discord[Discord Digest]
-        JFILE[Signal JSON]
-    end
-
-    Vault --> Chunker --> Embed --> ChromaDB
-    ChromaDB --> M1
-    ChromaDB --> M2
-    ChromaDB --> M3
-    ChromaDB --> M5
-    FAERS --> M3
-    PubMed --> M5
-    G26b --> M1
-    G26b --> M2
-    G26b --> M3
-    G4b --> M4
-    G4b --> M5
-    M1 --> Dash
-    M2 --> Dash
-    M3 --> Dash
-    M4 --> Dash
-    M5 --> Dash
-    M5 --> Discord
-    M3 --> JFILE
-
-    subgraph HW[Hardware]
-        GPU[RTX 5060 Ti 16GB]
-    end
-    LLMs -.-> GPU
-```
+![Architecture](docs/architecture.png)
 
 **Design principle:** All AI outputs carry `is_draft=True` and `reviewer_flag`. The platform is a junior analyst — the PharmD is the senior reviewer.
 
