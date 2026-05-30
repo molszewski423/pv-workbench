@@ -16,55 +16,83 @@ PV consultants face a daily information overload: FAERS adverse event feeds, Pub
 
 ```mermaid
 graph TB
-    subgraph Sources["📥 Data Sources"]
-        FAERS["OpenFDA FAERS API\nAdverse Event Reports"]
-        PubMed["PubMed / Entrez API\nLiterature"]
-        Vault["Obsidian Vault\nRegulatory Guidelines\nICH · FDA · EMA GVP"]
+    subgraph Sources["Data Sources"]
+        FAERS["OpenFDA FAERS API
+Adverse Event Reports"]
+        PubMed["PubMed / Entrez API
+Literature"]
+        Vault["Obsidian Vault
+Regulatory Guidelines
+ICH / FDA / EMA GVP"]
     end
 
-    subgraph RAG["🔍 RAG Pipeline"]
-        Chunker["Header-Aware\nMarkdown Chunker"]
-        Embed["nomic-embed-text\nOllama Embeddings"]
-        ChromaDB["ChromaDB\nPersistent Vector Store"]
+    subgraph RAG["RAG Pipeline"]
+        Chunker["Header-Aware Chunker"]
+        Embed["nomic-embed-text
+Ollama Embeddings"]
+        ChromaDB["ChromaDB
+Vector Store"]
     end
 
-    subgraph LLMs["🤖 Local LLM Stack — Ollama"]
-        G26b["gemma4:26b\nThinking Mode\nReasoning · Analysis · MedDRA"]
-        G4b["gemma4:e4b\nDrafting · Prose · Digests"]
+    subgraph LLMs["Local LLM Stack - Ollama"]
+        G26b["gemma4:26b
+Reasoning / Analysis / MedDRA"]
+        G4b["gemma4:e4b
+Drafting / Prose / Digests"]
     end
 
-    subgraph Modules["⚙️ PV Modules"]
-        M1["Module 1\nRegulatory Q&A\nRAG over FDA + EMA guidelines"]
-        M2["Module 2\nMedDRA Coder\nPT suggestion with reviewer flag"]
-        M3["Module 3\nFAERS Signal Detection\nPRR · Chi² · Evans criteria"]
-        M4["Module 4\nICSR Narrative Generator\nE2B(R3)-aligned draft"]
-        M5["Module 5\nLiterature Monitor\nPubMed digest + Telegram"]
+    subgraph Modules["PV Modules"]
+        M1["Module 1
+Regulatory Q&A"]
+        M2["Module 2
+MedDRA Coder"]
+        M3["Module 3
+FAERS Signal Detection
+PRR / Chi2 / Evans criteria"]
+        M4["Module 4
+ICSR Narrative Generator"]
+        M5["Module 5
+Literature Monitor"]
     end
 
-    subgraph Projects["📁 Multi-Drug Project Layer"]
-        PC["ProjectConfig\nper-drug collection\ncomparator · pubmed terms"]
+    subgraph Projects["Multi-Drug Project Layer"]
+        PC["ProjectConfig
+per-drug collection"]
     end
 
-    subgraph Output["📊 Outputs"]
-        Dash["Streamlit Dashboard\nSenior Reviewer Interface"]
-        Discord["Discord #lit-monitor\nWeekly Digest"]
-        JFILE["Signal JSON\nAudit Trail"]
+    subgraph Output["Outputs"]
+        Dash["Streamlit Dashboard"]
+        Discord["Discord lit-monitor Digest"]
+        JFILE["Signal JSON Audit Trail"]
     end
 
     Vault --> Chunker --> Embed --> ChromaDB
-    ChromaDB --> M1 & M2 & M3 & M5
+    ChromaDB --> M1
+    ChromaDB --> M2
+    ChromaDB --> M3
+    ChromaDB --> M5
     FAERS --> M3
     PubMed --> M5
-    G26b --> M1 & M2 & M3
-    G4b --> M4 & M5
-    PC --> M1 & M2 & M3 & M4 & M5
-    M1 & M2 & M3 & M4 & M5 --> Dash
-    M5 --> Discord["Discord\n#lit-monitor Digest"]
+    G26b --> M1
+    G26b --> M2
+    G26b --> M3
+    G4b --> M4
+    G4b --> M5
+    PC --> M1
+    PC --> M2
+    PC --> M3
+    PC --> M4
+    PC --> M5
+    M1 --> Dash
+    M2 --> Dash
+    M3 --> Dash
+    M4 --> Dash
+    M5 --> Dash
+    M5 --> Discord
     M3 --> JFILE
 
-    subgraph HW["💻 Hardware"]
-        GPU["RTX 5060 Ti · 16 GB VRAM"]
-        RAM["32 GB System RAM"]
+    subgraph HW["Hardware"]
+        GPU["RTX 5060 Ti 16GB VRAM"]
     end
     LLMs -.->|runs on| GPU
 ```
