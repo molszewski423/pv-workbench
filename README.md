@@ -241,7 +241,7 @@ The platform never makes final regulatory determinations. `is_draft` cannot be s
 
 ```bash
 # 1. Clone and set up environment (Python 3.11 required — chromadb wheels)
-git clone https://github.com/molszewskiPV/PV-Signal-Intelligence-Workbench
+git clone https://gitlab.com/molszewski423/pv-workbench
 cd PV-Signal-Intelligence-Workbench
 python3.11 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
