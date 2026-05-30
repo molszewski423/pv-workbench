@@ -17,32 +17,26 @@ PV consultants face a daily information overload: FAERS adverse event feeds, Pub
 ```mermaid
 graph TB
     subgraph Sources[Data Sources]
-        FAERS[OpenFDA FAERS
-Adverse Events]
-        PubMed[PubMed
-Literature]
-        Vault[Obsidian Vault
-ICH / FDA / EMA Guidelines]
+        FAERS[OpenFDA FAERS]
+        PubMed[PubMed Literature]
+        Vault[Obsidian Vault Guidelines]
     end
 
     subgraph RAG[RAG Pipeline]
         Chunker[Markdown Chunker]
-        Embed[nomic-embed-text]
-        ChromaDB[ChromaDB]
+        Embed[nomic-embed-text Embeddings]
+        ChromaDB[ChromaDB Vector Store]
     end
 
     subgraph LLMs[Local LLMs via Ollama]
-        G26b[gemma4:26b
-Reasoning / MedDRA]
-        G4b[gemma4:e4b
-Drafting / Prose]
+        G26b[gemma4 26b - Reasoning]
+        G4b[gemma4 e4b - Drafting]
     end
 
     subgraph Modules[PV Modules]
-        M1[Regulatory Q&A]
+        M1[Regulatory QA]
         M2[MedDRA Coder]
-        M3[FAERS Signal Detection
-PRR / Evans criteria]
+        M3[FAERS Signal Detection]
         M4[ICSR Narrative Generator]
         M5[Literature Monitor]
     end
