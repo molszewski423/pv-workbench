@@ -16,54 +16,41 @@ PV consultants face a daily information overload: FAERS adverse event feeds, Pub
 
 ```mermaid
 graph TB
-    subgraph Sources["Data Sources"]
-        FAERS["OpenFDA FAERS API
-Adverse Event Reports"]
-        PubMed["PubMed / Entrez API
-Literature"]
-        Vault["Obsidian Vault
-Regulatory Guidelines
-ICH / FDA / EMA GVP"]
+    subgraph Sources[Data Sources]
+        FAERS[OpenFDA FAERS
+Adverse Events]
+        PubMed[PubMed
+Literature]
+        Vault[Obsidian Vault
+ICH / FDA / EMA Guidelines]
     end
 
-    subgraph RAG["RAG Pipeline"]
-        Chunker["Header-Aware Chunker"]
-        Embed["nomic-embed-text
-Ollama Embeddings"]
-        ChromaDB["ChromaDB
-Vector Store"]
+    subgraph RAG[RAG Pipeline]
+        Chunker[Markdown Chunker]
+        Embed[nomic-embed-text]
+        ChromaDB[ChromaDB]
     end
 
-    subgraph LLMs["Local LLM Stack - Ollama"]
-        G26b["gemma4:26b
-Reasoning / Analysis / MedDRA"]
-        G4b["gemma4:e4b
-Drafting / Prose / Digests"]
+    subgraph LLMs[Local LLMs via Ollama]
+        G26b[gemma4:26b
+Reasoning / MedDRA]
+        G4b[gemma4:e4b
+Drafting / Prose]
     end
 
-    subgraph Modules["PV Modules"]
-        M1["Module 1
-Regulatory Q&A"]
-        M2["Module 2
-MedDRA Coder"]
-        M3["Module 3
-FAERS Signal Detection
-PRR / Chi2 / Evans criteria"]
-        M4["Module 4
-ICSR Narrative Generator"]
-        M5["Module 5
-Literature Monitor"]
+    subgraph Modules[PV Modules]
+        M1[Regulatory Q&A]
+        M2[MedDRA Coder]
+        M3[FAERS Signal Detection
+PRR / Evans criteria]
+        M4[ICSR Narrative Generator]
+        M5[Literature Monitor]
     end
 
-    subgraph Projects["Multi-Drug Project Layer"]
-        PC["ProjectConfig
-per-drug collection"]
-    end
-
-    subgraph Output["Outputs"]
-        Dash["Streamlit Dashboard"]
-        Discord["Discord lit-monitor Digest"]
-        JFILE["Signal JSON Audit Trail"]
+    subgraph Output[Outputs]
+        Dash[Streamlit Dashboard]
+        Discord[Discord Digest]
+        JFILE[Signal JSON]
     end
 
     Vault --> Chunker --> Embed --> ChromaDB
@@ -78,11 +65,6 @@ per-drug collection"]
     G26b --> M3
     G4b --> M4
     G4b --> M5
-    PC --> M1
-    PC --> M2
-    PC --> M3
-    PC --> M4
-    PC --> M5
     M1 --> Dash
     M2 --> Dash
     M3 --> Dash
@@ -91,10 +73,10 @@ per-drug collection"]
     M5 --> Discord
     M3 --> JFILE
 
-    subgraph HW["Hardware"]
-        GPU["RTX 5060 Ti 16GB VRAM"]
+    subgraph HW[Hardware]
+        GPU[RTX 5060 Ti 16GB]
     end
-    LLMs -.->|runs on| GPU
+    LLMs -.-> GPU
 ```
 
 **Design principle:** All AI outputs carry `is_draft=True` and `reviewer_flag`. The platform is a junior analyst — the PharmD is the senior reviewer.
