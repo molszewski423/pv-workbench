@@ -12,6 +12,62 @@ PV consultants face a daily information overload: FAERS adverse event feeds, Pub
 
 ---
 
+## Kubernetes Deployment (Production)
+
+Deployed on a two-node **k3s cluster** in the `ai` namespace. No local Python environment required.
+
+| Node | Role | IP (Tailscale) | Hardware |
+|---|---|---|---|
+| **mikepc** | Control plane + GPU | 100.97.45.57 | RTX 5060 Ti 16 GB, 32 GB RAM |
+| **archbox** | Worker | 100.96.122.27 | i3-4130T, 24/7 server |
+
+```bash
+# Prerequisites: kubectl configured, gitlab-registry pull secret in ai namespace
+# (see k8s/README or Secrets section below)
+
+kubectl apply -f k8s/ollama.yaml          # Ollama pod + service + PV
+kubectl apply -f k8s/pv-workbench.yaml    # Streamlit dashboard + PVCs
+kubectl apply -f k8s/argus.yaml           # Discord bot
+kubectl apply -f k8s/ingress.yaml         # Traefik rules
+
+# Dashboard: http://pv.lan  (add 192.168.4.54 pv.lan to /etc/hosts)
+# Argus bot: runs in parallel pod, same image, CMD overridden to src/argus_bot.py
+```
+
+### Vault ingestion (after first deploy or vault changes)
+
+```bash
+kubectl exec -n ai deployment/pv-workbench -- python3 -m ingester.vault_ingester
+```
+
+### Secrets
+
+```bash
+# Registry pull secret
+kubectl create secret docker-registry gitlab-registry -n ai \
+  --docker-server=registry.gitlab.com \
+  --docker-username=<gitlab-user> \
+  --docker-password=<pat-read-registry>
+
+# Auth credentials (secrets.toml for streamlit-authenticator)
+kubectl create secret generic pv-workbench-secrets -n ai \
+  --from-file=secrets.toml=/path/to/secrets.toml
+
+# Discord bot token
+kubectl create secret generic argus-secrets -n ai \
+  --from-literal=DISCORD_BOT_TOKEN=<token>
+```
+
+### CI/CD
+
+Every push to `main` triggers a GitLab CI pipeline (`.gitlab-ci.yml`):
+1. `lint` — ruff check
+2. `build` — `docker build` + push to `registry.gitlab.com/molszewski423/pv-workbench:latest`
+
+Rollout: `kubectl rollout restart deployment/pv-workbench deployment/argus-bot -n ai`
+
+---
+
 ## System Architecture
 
 ![Architecture](docs/architecture.png)
@@ -27,7 +83,7 @@ PV consultants face a daily information overload: FAERS adverse event feeds, Pub
 | **Reasoning LLM** | `gemma4:26b` (256K ctx, Thinking Mode) | MedDRA deliberation, signal interpretation, regulatory Q&A  -  needs long context and structured reasoning |
 | **Drafting LLM** | `gemma4:e4b` | ICSR narratives, lit digests  -  fast, coherent prose without heavy compute |
 | **Embeddings** | `nomic-embed-text` via Ollama | Local, no API key, strong retrieval performance |
-| **LLM Serving** | Ollama `http://127.0.0.1:11434` | Single-command model management, GPU scheduling |
+| **LLM Serving** | Ollama k3s pod `http://ollama:11434` (in-cluster) | GPU pod on mikepc; RTX 5060 Ti; shared across all `ai` namespace workloads |
 | **Orchestration** | LangChain (`ChatOllama` + `ChatPromptTemplate`) | Structured prompt→parse pipelines per module |
 | **Vector Store** | ChromaDB (persistent, per-drug collections) | Drug isolation without separate servers |
 | **Knowledge Base** | Obsidian vault → header-aware chunker | Clinician-editable; wikilinks resolved at ingest |
@@ -35,6 +91,7 @@ PV consultants face a daily information overload: FAERS adverse event feeds, Pub
 | **Signal API** | OpenFDA FAERS (quarterly-partitioned pagination) | Bypasses 5000-result cap; deduplicates by `safetyreportid` |
 | **Literature** | Biopython Entrez (PubMed) | Standard; handles date-windowed search across multiple query terms |
 | **Notifications** | Discord REST API (discord_utils.py) | Weekly digest delivery with escalation alerts to #lit-monitor |
+| **Orchestration** | k3s (Kubernetes) | Two-node cluster; Traefik ingress; GitLab registry; `ai` namespace |
 | **Hardware** | RTX 5060 Ti 16 GB · 32 GB RAM | 26B model fits comfortably; no cloud dependency |
 
 ---
@@ -186,27 +243,45 @@ The platform never makes final regulatory determinations. `is_draft` cannot be s
 
 ## Quick Start
 
+### Production (k3s)
+
+```bash
+# 1. Apply manifests (requires kubectl + pull secret pre-created)
+kubectl apply -f k8s/ollama.yaml
+kubectl apply -f k8s/pv-workbench.yaml
+kubectl apply -f k8s/argus.yaml
+kubectl apply -f k8s/ingress.yaml
+
+# 2. Ingest vault
+kubectl exec -n ai deployment/pv-workbench -- python3 -m ingester.vault_ingester
+
+# 3. Access
+# Add to /etc/hosts: 192.168.4.54  pv.lan
+open http://pv.lan   # login: username=mike, password=<from secrets.toml>
+```
+
+### Local Development
+
 ```bash
 # 1. Clone and set up environment (Python 3.11 required  -  chromadb wheels)
 git clone https://gitlab.com/molszewski423/pv-workbench
-cd PV-Signal-Intelligence-Workbench
+cd pv-workbench
 python3.11 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-# 2. Pull models (requires Ollama  -  https://ollama.ai)
-ollama pull nomic-embed-text
-ollama pull gemma4:26b
-ollama pull gemma4:e4b
+# 2. Pull models (Ollama required)
+ollama pull nomic-embed-text && ollama pull gemma4:26b && ollama pull gemma4:e4b
 
-# 3. Ingest knowledge base
+# 3. Configure auth
+mkdir -p .streamlit
+# Create .streamlit/secrets.toml with [credentials] and [cookie] sections
+
+# 4. Ingest vault
 PYTHONPATH=src python -m ingester.vault_ingester
 
-# 4. Verify retrieval quality
-PYTHONPATH=src python tests/benchmark/run_benchmark.py
-# Target: P@5=100%, MRR≥0.85
-
-# 5. Launch dashboard
+# 5. Launch
 PYTHONPATH=src streamlit run src/dashboard/app.py
+# Dashboard at http://localhost:8501
 ```
 
 ---
@@ -215,7 +290,7 @@ PYTHONPATH=src streamlit run src/dashboard/app.py
 
 ### Desktop  -  Streamlit Dashboard (Primary)
 
-The Streamlit dashboard is the main workbench interface, running locally at `localhost:8501` on Debian 13:
+The Streamlit dashboard is the main workbench interface, running at **http://pv.lan** (k3s) or `localhost:8501` (local dev):
 
 - **Project selector**  -  switch between client drugs instantly; all modules update to reflect the active drug
 - **All 5 modules**  -  full UI for regulatory Q&A, MedDRA coding, signal detection with charts, ICSR drafting, literature digests
@@ -237,7 +312,9 @@ The Argus Discord bot (`src/argus_bot.py`) mirrors the full workbench over Disco
 #workbench-logs      → audit trail of all queries
 ```
 
-**Argus is an intelligent router:** `gemma4:26b` handles all conversation and clinical reasoning; `gemma4:e4b` handles narrative generation; the workbench RAG pipeline provides real-time guideline retrieval. The routing is transparent to the user  -  Argus feels like one unified assistant regardless of which model handles a specific task.
+**Argus is an intelligent router:** `qwen2.5:7b` handles intent classification and general chat (fast path); `gemma4:26b` handles all clinical reasoning when routed to a specialist module; `gemma4:e4b` handles narrative generation. The routing is transparent  -  Argus feels like one unified assistant regardless of which model handles a specific task.
+
+In production, Argus runs as a **separate k3s deployment** (`argus-bot`) in the `ai` namespace, sharing the `pv-workbench-chroma` and `pv-workbench-output` PVCs with the Streamlit pod. The dashboard detects Argus liveness via a heartbeat file written to the shared output PVC every 60 seconds.
 
 **Voice interface:** `!voice join` → Argus joins your voice channel. `!voice speak <text>` plays TTS via edge-tts. Audio file transcription via `!transcribe` uses faster-whisper on the RTX 5060 Ti GPU. Real-time voice conversation requires the Hermes voice stack (Hermes Discord gateway + `VoiceReceiver`).
 
@@ -251,13 +328,15 @@ The Argus Discord bot (`src/argus_bot.py`) mirrors the full workbench over Disco
 
 No data leaves the machine. All LLM inference runs on an RTX 5060 Ti 16 GB, served by Ollama:
 
-| Model | VRAM | Role |
-|---|---|---|
-| `gemma4:26b` (A4B sparse) | ~8 GB active | Clinical reasoning, signal interpretation, regulatory Q&A |
-| `gemma4:e4b` | ~3 GB | ICSR narratives, lit digests, prose drafting |
-| `medgemma:27b` (planned) | ~14 GB | Medical entity extraction, clinical NLP tasks |
-| `qwen3:30b` (planned) | ~16 GB | Alternative reasoning, multilingual regulatory documents |
-| `nomic-embed-text` | ~0.3 GB | Vault embeddings (retrieval only) |
+| Model | VRAM | Role | Config key |
+|---|---|---|---|
+| `gemma4:26b` | ~8 GB active | Regulatory Q&A, signal interpretation, MedDRA coding | `REASON_MODEL` |
+| `gemma4:e4b` | ~3 GB | ICSR narratives, lit digests, prose drafting | `DRAFT_MODEL` |
+| `qwen2.5:7b` | ~5 GB | Intent classification, general Discord chat (fast path) | `CHAT_MODEL` |
+| `qwen3:30b` | ~19 GB | Available; high-capacity alternative reasoning | — |
+| `nomic-embed-text` | ~0.3 GB | Vault embeddings (retrieval only) | `EMBED_MODEL` |
+
+All models served by the Ollama k3s pod on mikepc (RTX 5060 Ti). Override any model at deploy time via env vars in the k8s manifest.
 
 Layer offloading to 32 GB system RAM handles models that exceed VRAM. Ollama manages GPU scheduling automatically.
 
@@ -305,12 +384,16 @@ ChromaDB with `nomic-embed-text` embeddings:
 
 ### Infrastructure
 
-- **OS**: Debian 13 (Trixie), Linux 6.12
-- **GPU**: RTX 5060 Ti 16 GB VRAM  -  inference + STT (faster-whisper CUDA)
-- **RAM**: 32 GB  -  Ollama layer offloading for large models
-- **Ollama**: Custom configuration for model scheduling, context length, layer distribution
-- **Python**: 3.11 (venv)  -  chromadb wheels not available for 3.13
-- **Discord bot**: discord.py 2.7.1, PyNaCl, ffmpeg, edge-tts, faster-whisper
+| Component | Detail |
+|---|---|
+| **Cluster** | k3s v1.35, two nodes: mikepc (control plane) + archbox (worker) |
+| **Namespace** | `ai` — all workloads here |
+| **Ingress** | Traefik (k3s built-in); `pv.lan` → pv-workbench:8501 |
+| **Registry** | `registry.gitlab.com/molszewski423/pv-workbench:latest` |
+| **GPU node** | mikepc — RTX 5060 Ti 16 GB; NVIDIA device plugin + RuntimeClass `nvidia` |
+| **Storage** | k3s local-path provisioner; PVCs: `pv-workbench-chroma` (2 Gi), `pv-workbench-output` (5 Gi) |
+| **OS** | Debian 13 (Trixie), Linux 6.12 |
+| **Python** | 3.11 in container (chromadb wheels not available for 3.13) |
 
 ---
 
