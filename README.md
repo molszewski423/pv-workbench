@@ -14,12 +14,13 @@ PV consultants face a daily information overload: FAERS adverse event feeds, Pub
 
 ## Kubernetes Deployment (Production)
 
-Deployed on a two-node **k3s cluster** in the `ai` namespace. No local Python environment required.
+Deployed on a three-node **k3s cluster** in the `ai` namespace. No local Python environment required.
 
-| Node | Role | IP (Tailscale) | Hardware |
+| Node | Role | IP | Hardware |
 |---|---|---|---|
-| **mikepc** | Control plane + GPU | 100.97.45.57 | RTX 5060 Ti 16 GB, 32 GB RAM |
-| **archbox** | Worker | 100.96.122.27 | i3-4130T, 24/7 server |
+| **mikepc** | Control plane + GPU | 100.97.45.57 (Tailscale) | RTX 5060 Ti 16 GB, 32 GB RAM |
+| **archbox** | Worker | 100.96.122.27 (Tailscale) | i3-4130T, 24/7 server |
+| **mikeinspiron** | Worker (LAN only) | 192.168.4.33 | Dell Inspiron, Debian 13 |
 
 ```bash
 # Prerequisites: kubectl configured, gitlab-registry pull secret in ai namespace
@@ -91,7 +92,7 @@ Rollout: `kubectl rollout restart deployment/pv-workbench deployment/argus-bot -
 | **Signal API** | OpenFDA FAERS (quarterly-partitioned pagination) | Bypasses 5000-result cap; deduplicates by `safetyreportid` |
 | **Literature** | Biopython Entrez (PubMed) | Standard; handles date-windowed search across multiple query terms |
 | **Notifications** | Discord REST API (discord_utils.py) | Weekly digest delivery with escalation alerts to #lit-monitor |
-| **Orchestration** | k3s (Kubernetes) | Two-node cluster; Traefik ingress; GitLab registry; `ai` namespace |
+| **Orchestration** | k3s (Kubernetes) | Three-node cluster; Traefik ingress; GitLab registry; `ai` namespace |
 | **Hardware** | RTX 5060 Ti 16 GB · 32 GB RAM | 26B model fits comfortably; no cloud dependency |
 
 ---
@@ -386,7 +387,7 @@ ChromaDB with `nomic-embed-text` embeddings:
 
 | Component | Detail |
 |---|---|
-| **Cluster** | k3s v1.35, two nodes: mikepc (control plane) + archbox (worker) |
+| **Cluster** | k3s v1.35, three nodes: mikepc (control plane), archbox + mikeinspiron (workers) |
 | **Namespace** | `ai` - all workloads here |
 | **Ingress** | Traefik (k3s built-in); `pv.lan` → pv-workbench:8501 |
 | **Registry** | `registry.gitlab.com/molszewski423/pv-workbench:latest` |
