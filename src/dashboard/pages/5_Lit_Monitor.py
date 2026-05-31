@@ -9,6 +9,16 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from modules.lit_monitor import search_pubmed, score_relevance, generate_digest, send_discord_digest
 
 st.set_page_config(page_title="Literature Monitor", page_icon="📚", layout="wide")
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent.parent.parent))
+from auth import require_auth, auth_sidebar
+require_auth()
+
+with st.sidebar:
+    auth_sidebar()
+
 st.title("📚 Literature Monitoring Agent")
 st.caption("PubMed search · gemma4:e4b digest · Discord delivery · GVP Module VI cadence")
 
@@ -66,6 +76,13 @@ if run:
                 st.caption(f"PMID: {esc.pmid} · {esc.journal} · {esc.pub_date}")
                 st.markdown(esc.summary)
 
+    try:
+        from shared.pdf_report import save_lit_monitor_report
+        pdf_path = save_lit_monitor_report(drug, filtered, digest)
+        st.success(f"PDF saved → {pdf_path.name}")
+    except Exception as e:
+        st.warning(f"PDF save failed: {e}")
+
     tab1, tab2 = st.tabs(["📄 Digest", "📊 Results Table"])
 
     with tab1:
@@ -100,7 +117,7 @@ if run:
             return colors.get(val, "")
 
         st.dataframe(
-            df.style.applymap(color_action, subset=["Action"]),
+            df.style.map(color_action, subset=["Action"]),
             use_container_width=True,
             height=min(700, 40 + len(df) * 35),
         )

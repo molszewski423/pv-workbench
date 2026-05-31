@@ -8,6 +8,16 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from modules.regulatory_qa import answer_regulatory_question
 
 st.set_page_config(page_title="Regulatory Q&A", page_icon="📋", layout="wide")
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent.parent.parent))
+from auth import require_auth, auth_sidebar
+require_auth()
+
+with st.sidebar:
+    auth_sidebar()
+
 st.title("📋 Regulatory Document Q&A")
 st.caption("RAG over EMA GVP modules, ICH guidelines · gemma4:26b Thinking Mode · Citations required")
 
@@ -33,6 +43,13 @@ if st.button("Ask", type="primary") and question:
     with st.spinner("Thinking..."):
         folder = None if folder_filter == "All" else folder_filter
         result = answer_regulatory_question(question, n_context=n_chunks, folder=folder)
+
+    try:
+        from shared.pdf_report import save_regulatory_qa_report
+        pdf_path = save_regulatory_qa_report(question, result)
+        st.success(f"PDF saved → {pdf_path.name}")
+    except Exception as e:
+        st.warning(f"PDF save failed: {e}")
 
     st.subheader("Answer")
     st.markdown(result.answer)

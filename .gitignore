@@ -27,3 +27,4 @@ data/*.json
 
 # Benchmark outputs
 tests/benchmark/results/
+.streamlit/secrets.toml

@@ -8,6 +8,16 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from modules.meddra_coder import suggest_meddra_pt
 
 st.set_page_config(page_title="MedDRA Coder", page_icon="🏷️", layout="wide")
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent.parent.parent))
+from auth import require_auth, auth_sidebar
+require_auth()
+
+with st.sidebar:
+    auth_sidebar()
+
 st.title("🏷️ MedDRA Coding Assistant")
 st.caption("gemma4:26b Thinking Mode deliberation · All suggestions require senior reviewer sign-off")
 
@@ -27,6 +37,13 @@ verbatim = st.text_input(
 if st.button("Suggest MedDRA PT", type="primary") and narrative:
     with st.spinner("Deliberating..."):
         result = suggest_meddra_pt(narrative, verbatim_term=verbatim if verbatim else None)
+
+    try:
+        from shared.pdf_report import save_meddra_report
+        pdf_path = save_meddra_report(narrative, result)
+        st.success(f"PDF saved → {pdf_path.name}")
+    except Exception as e:
+        st.warning(f"PDF save failed: {e}")
 
     col1, col2 = st.columns([2, 1])
     with col1:

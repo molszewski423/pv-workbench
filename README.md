@@ -2,13 +2,13 @@
 
 **Local-LLM pharmacovigilance platform · Drug-agnostic · Clinician-designed**
 
-A production-grade pharmacovigilance (PV) platform that pairs 18 years of ICU/critical care clinical expertise with agentic AI and PV data science. Built for a PharmD, BCPS, BCCCP consultant managing multiple client drugs in parallel — every AI output is a draft reviewed by the clinician before any regulatory use.
+A production-grade pharmacovigilance (PV) platform that pairs 18 years of ICU/critical care clinical expertise with agentic AI and PV data science. Built for a PharmD, BCPS, BCCCP consultant managing multiple client drugs in parallel  -  every AI output is a draft reviewed by the clinician before any regulatory use.
 
 ---
 
 ## The Problem This Solves
 
-PV consultants face a daily information overload: FAERS adverse event feeds, PubMed literature, MedDRA coding decisions, E2B(R3) narrative drafts, and regulatory signal management across FDA and EMA frameworks — often for multiple drugs simultaneously. Commercial platforms are expensive, cloud-dependent, and not built for solo consultants. This workbench brings the full PV workflow local, private, and clinician-controlled.
+PV consultants face a daily information overload: FAERS adverse event feeds, PubMed literature, MedDRA coding decisions, E2B(R3) narrative drafts, and regulatory signal management across FDA and EMA frameworks  -  often for multiple drugs simultaneously. Commercial platforms are expensive, cloud-dependent, and not built for solo consultants. This workbench brings the full PV workflow local, private, and clinician-controlled.
 
 ---
 
@@ -16,7 +16,7 @@ PV consultants face a daily information overload: FAERS adverse event feeds, Pub
 
 ![Architecture](docs/architecture.png)
 
-**Design principle:** All AI outputs carry `is_draft=True` and `reviewer_flag`. The platform is a junior analyst — the PharmD is the senior reviewer.
+**Design principle:** All AI outputs carry `is_draft=True` and `reviewer_flag`. The platform is a junior analyst  -  the PharmD is the senior reviewer.
 
 ---
 
@@ -24,8 +24,8 @@ PV consultants face a daily information overload: FAERS adverse event feeds, Pub
 
 | Layer | Choice | Why |
 |---|---|---|
-| **Reasoning LLM** | `gemma4:26b` (256K ctx, Thinking Mode) | MedDRA deliberation, signal interpretation, regulatory Q&A — needs long context and structured reasoning |
-| **Drafting LLM** | `gemma4:e4b` | ICSR narratives, lit digests — fast, coherent prose without heavy compute |
+| **Reasoning LLM** | `gemma4:26b` (256K ctx, Thinking Mode) | MedDRA deliberation, signal interpretation, regulatory Q&A  -  needs long context and structured reasoning |
+| **Drafting LLM** | `gemma4:e4b` | ICSR narratives, lit digests  -  fast, coherent prose without heavy compute |
 | **Embeddings** | `nomic-embed-text` via Ollama | Local, no API key, strong retrieval performance |
 | **LLM Serving** | Ollama `http://127.0.0.1:11434` | Single-command model management, GPU scheduling |
 | **Orchestration** | LangChain (`ChatOllama` + `ChatPromptTemplate`) | Structured prompt→parse pipelines per module |
@@ -41,20 +41,20 @@ PV consultants face a daily information overload: FAERS adverse event feeds, Pub
 
 ## Project Spotlight: FAERS Signal Detection Pipeline
 
-The FAERS signal detection module is the most technically demanding piece — combining statistical disproportionality analysis with LLM-powered clinical interpretation.
+The FAERS signal detection module is the most technically demanding piece  -  combining statistical disproportionality analysis with LLM-powered clinical interpretation.
 
 ### What It Does
 
-1. **Fetch** — Retrieves adverse event reports from OpenFDA using quarterly date-range partitioning. The FAERS API caps results at 5000 per search; partitioning into calendar quarters yields the complete dataset without truncation.
+1. **Fetch**  -  Retrieves adverse event reports from OpenFDA using quarterly date-range partitioning. The FAERS API caps results at 5000 per search; partitioning into calendar quarters yields the complete dataset without truncation.
 
-2. **Compute PRR** — Calculates Proportional Reporting Ratio (PRR) against a configurable comparator drug (default: meropenem) using the Evans criteria: **PRR ≥ 2.0 AND N ≥ 3 AND χ² ≥ 4.0**.
+2. **Compute PRR**  -  Calculates Proportional Reporting Ratio (PRR) against a configurable comparator drug (default: meropenem) using the Evans criteria: **PRR ≥ 2.0 AND N ≥ 3 AND χ² ≥ 4.0**.
 
-3. **Statistical rigor** — Three production-grade adjustments:
+3. **Statistical rigor**  -  Three production-grade adjustments:
    - **Artifact exclusion**: Administrative FAERS PTs (`off label use`, `no adverse event`, `drug ineffective`, etc.) are filtered before analysis
-   - **Continuity correction**: b=0 reactions (drug-specific signals with no background cases) use b=0.5 instead of being silently dropped — preserves novel signals for new drugs
+   - **Continuity correction**: b=0 reactions (drug-specific signals with no background cases) use b=0.5 instead of being silently dropped  -  preserves novel signals for new drugs
    - **Yates' χ² correction**: Applied when any expected cell count < 5, reducing false positives common in sparse FAERS data for recently-approved drugs
 
-4. **Clinical interpretation** — One batched `gemma4:26b` call interprets all positive signals with confounding analysis (critical for last-resort antibiotics where severity bias inflates mortality PRRs), ICH E2A regulatory action classification, and reviewer notes.
+4. **Clinical interpretation**  -  One batched `gemma4:26b` call interprets all positive signals with confounding analysis (critical for last-resort antibiotics where severity bias inflates mortality PRRs), ICH E2A regulatory action classification, and reviewer notes.
 
 ### PRR Formula
 
@@ -74,9 +74,9 @@ Confounding by indication is explicitly flagged in the interpretation prompt: la
 
 ### Worked Example: Cefiderocol (Real Pipeline Output)
 
-Cefiderocol is a siderophore cephalosporin approved for gram-negative infections with limited treatment options — a true last-resort antibiotic with a small, critically ill patient population. This makes it an ideal test case for signal detection methodology.
+Cefiderocol is a siderophore cephalosporin approved for gram-negative infections with limited treatment options  -  a true last-resort antibiotic with a small, critically ill patient population. This makes it an ideal test case for signal detection methodology.
 
-**Pipeline run: May 2026** — [`faers_pipeline/output/`](faers_pipeline/output/)
+**Pipeline run: May 2026**  -  [`faers_pipeline/output/`](faers_pipeline/output/)
 
 ```
 REACTION PT                              N    BG       PRR    Chi²   Signal
@@ -96,11 +96,11 @@ nephrotoxicity                          10     5      4.73   12.87    YES
 
 **Clinical interpretation** (applied by `gemma4:26b`):
 
-- **Death signal (PRR 9.34, N=109)**: High PRR warrants attention but almost certainly reflects **confounding by indication**. Cefiderocol is reserved for carbapenem-resistant gram-negative infections — the sickest patients in the ICU who face high baseline mortality from the underlying infection, not the drug. A naive statistical read would flag this as a safety signal; clinical context explains it.
+- **Death signal (PRR 9.34, N=109)**: High PRR warrants attention but almost certainly reflects **confounding by indication**. Cefiderocol is reserved for carbapenem-resistant gram-negative infections  -  the sickest patients in the ICU who face high baseline mortality from the underlying infection, not the drug. A naive statistical read would flag this as a safety signal; clinical context explains it.
 
-- **Treatment failure / therapy non-responder (PRR 17.71 / 9.88)**: Clinically important — consistent with emerging carbapenem-resistant organism resistance patterns and the "last-resort" population this drug treats. Warrants signal validation against published MIC data.
+- **Treatment failure / therapy non-responder (PRR 17.71 / 9.88)**: Clinically important  -  consistent with emerging carbapenem-resistant organism resistance patterns and the "last-resort" population this drug treats. Warrants signal validation against published MIC data.
 
-- **Ototoxicity and nephrotoxicity**: Both known adverse effects of beta-lactam antibiotics in critically ill patients with polypharmacy. Signals are expected and serve as a positive control — the pipeline is detecting real, known effects.
+- **Ototoxicity and nephrotoxicity**: Both known adverse effects of beta-lactam antibiotics in critically ill patients with polypharmacy. Signals are expected and serve as a positive control  -  the pipeline is detecting real, known effects.
 
 - **Artifact exclusion working correctly**: `"no adverse event"` (would have been PRR 28.75) and `"drug ineffective"` filtered pre-analysis. Without this correction, these administrative PTs dominate the signal table and obscure clinically meaningful reactions.
 
@@ -129,8 +129,8 @@ Every module is parameterized by drug, not hardcoded. A `ProjectConfig` object c
 class ProjectConfig:
     drug_name: str                    # e.g. "cefiderocol", "colistin", "vancomycin"
     comparator: str = "meropenem"     # FAERS background comparator
-    collection_name: str = ""         # auto: pv_{drug} — isolated ChromaDB collection
-    vault_folder: str = ""            # auto: Drugs/{DrugName} — per-drug vault notes
+    collection_name: str = ""         # auto: pv_{drug}  -  isolated ChromaDB collection
+    vault_folder: str = ""            # auto: Drugs/{DrugName}  -  per-drug vault notes
     pubmed_terms: list[str] = ...     # configurable search queries
 ```
 
@@ -143,18 +143,18 @@ Projects persist to `projects.json`. The Streamlit dashboard loads all active pr
 The RAG pipeline indexes structured markdown notes (Obsidian vault) covering:
 
 **ICH Guidelines**
-- E2A — Clinical Safety Data: definitions, seriousness, expedited timelines
-- E2B(R3) — Electronic ICSR transmission: data elements, narrative requirements
-- E2E — Pharmacovigilance planning: signal management, PSUR/PBRER, RMP
+- E2A  -  Clinical Safety Data: definitions, seriousness, expedited timelines
+- E2B(R3)  -  Electronic ICSR transmission: data elements, narrative requirements
+- E2E  -  Pharmacovigilance planning: signal management, PSUR/PBRER, RMP
 
 **EMA**
-- GVP Module VI — Signal management: PRAC, EudraVigilance, EU timelines
+- GVP Module VI  -  Signal management: PRAC, EudraVigilance, EU timelines
 
 **Signal Detection**
-- Evans Criteria — PRR formula, thresholds, biases, worked examples
+- Evans Criteria  -  PRR formula, thresholds, biases, worked examples
 
 **Coding**
-- MedDRA Conventions — PT selection rules, hierarchy, common decisions
+- MedDRA Conventions  -  PT selection rules, hierarchy, common decisions
 
 Notes use frontmatter `tags` and `source` fields. The ingester strips `[[wikilinks]]`, chunks by header hierarchy, and upserts idempotently using SHA-256 chunk IDs.
 
@@ -180,20 +180,20 @@ AI Output ──► is_draft=True ──► reviewer_flag=True ──► Senior 
                                                     20 years critical care and infectious disease
 ```
 
-The platform never makes final regulatory determinations. `is_draft` cannot be set to `False` by any module function — it is a design invariant, not a configuration option.
+The platform never makes final regulatory determinations. `is_draft` cannot be set to `False` by any module function  -  it is a design invariant, not a configuration option.
 
 ---
 
 ## Quick Start
 
 ```bash
-# 1. Clone and set up environment (Python 3.11 required — chromadb wheels)
+# 1. Clone and set up environment (Python 3.11 required  -  chromadb wheels)
 git clone https://gitlab.com/molszewski423/pv-workbench
 cd PV-Signal-Intelligence-Workbench
 python3.11 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-# 2. Pull models (requires Ollama — https://ollama.ai)
+# 2. Pull models (requires Ollama  -  https://ollama.ai)
 ollama pull nomic-embed-text
 ollama pull gemma4:26b
 ollama pull gemma4:e4b
@@ -213,19 +213,19 @@ PYTHONPATH=src streamlit run src/dashboard/app.py
 
 ## Interfaces
 
-### Desktop — Streamlit Dashboard (Primary)
+### Desktop  -  Streamlit Dashboard (Primary)
 
 The Streamlit dashboard is the main workbench interface, running locally at `localhost:8501` on Debian 13:
 
-- **Project selector** — switch between client drugs instantly; all modules update to reflect the active drug
-- **All 5 modules** — full UI for regulatory Q&A, MedDRA coding, signal detection with charts, ICSR drafting, literature digests
-- **Rich visualizations** — PRR signal charts, MedDRA hierarchy views, ICSR draft editor, lit digest display
-- **Real-time status** — Ollama model health, ChromaDB connectivity, active pipeline status
-- **Vault manager** — add/edit knowledge base notes, re-ingest, run benchmark
+- **Project selector**  -  switch between client drugs instantly; all modules update to reflect the active drug
+- **All 5 modules**  -  full UI for regulatory Q&A, MedDRA coding, signal detection with charts, ICSR drafting, literature digests
+- **Rich visualizations**  -  PRR signal charts, MedDRA hierarchy views, ICSR draft editor, lit digest display
+- **Real-time status**  -  Ollama model health, ChromaDB connectivity, active pipeline status
+- **Vault manager**  -  add/edit knowledge base notes, re-ingest, run benchmark
 
-### Discord — Argus Bot (Mobile Mirror)
+### Discord  -  Argus Bot (Mobile Mirror)
 
-The Argus Discord bot (`src/argus_bot.py`) mirrors the full workbench over Discord — making the platform accessible on mobile (iPhone, iPad) anywhere with internet:
+The Argus Discord bot (`src/argus_bot.py`) mirrors the full workbench over Discord  -  making the platform accessible on mobile (iPhone, iPad) anywhere with internet:
 
 ```
 #regulatory-qa       → answer_regulatory_question()  → formatted embed with citations
@@ -237,7 +237,7 @@ The Argus Discord bot (`src/argus_bot.py`) mirrors the full workbench over Disco
 #workbench-logs      → audit trail of all queries
 ```
 
-**Argus is an intelligent router:** `gemma4:26b` handles all conversation and clinical reasoning; `gemma4:e4b` handles narrative generation; the workbench RAG pipeline provides real-time guideline retrieval. The routing is transparent to the user — Argus feels like one unified assistant regardless of which model handles a specific task.
+**Argus is an intelligent router:** `gemma4:26b` handles all conversation and clinical reasoning; `gemma4:e4b` handles narrative generation; the workbench RAG pipeline provides real-time guideline retrieval. The routing is transparent to the user  -  Argus feels like one unified assistant regardless of which model handles a specific task.
 
 **Voice interface:** `!voice join` → Argus joins your voice channel. `!voice speak <text>` plays TTS via edge-tts. Audio file transcription via `!transcribe` uses faster-whisper on the RTX 5060 Ti GPU. Real-time voice conversation requires the Hermes voice stack (Hermes Discord gateway + `VoiceReceiver`).
 
@@ -265,9 +265,9 @@ Layer offloading to 32 GB system RAM handles models that exceed VRAM. Ollama man
 
 Statistical rigor matching industry standards:
 - **PRR/ROR disproportionality** using the 2×2 contingency table
-- **Evans criteria**: PRR ≥ 2.0 AND N ≥ 3 AND χ² ≥ 4.0 — all three required simultaneously
-- **Continuity correction**: b=0 reactions use b=0.5 instead of silent discard — preserves drug-specific signals
-- **Yates' χ² correction**: applied when any expected cell < 5 — reduces false positives in sparse FAERS data
+- **Evans criteria**: PRR ≥ 2.0 AND N ≥ 3 AND χ² ≥ 4.0  -  all three required simultaneously
+- **Continuity correction**: b=0 reactions use b=0.5 instead of silent discard  -  preserves drug-specific signals
+- **Yates' χ² correction**: applied when any expected cell < 5  -  reduces false positives in sparse FAERS data
 - **Artifact exclusion**: 12 FAERS administrative PTs filtered before analysis
 - **Quarterly pagination bypass**: `_fetch_quarter()` per calendar quarter overcomes the 5000-result OpenFDA API cap
 
@@ -284,37 +284,37 @@ ChromaDB with `nomic-embed-text` embeddings:
 13 structured notes covering FDA and EMA regulatory frameworks:
 
 **ICH (applies to both jurisdictions)**
-- E2A — ICSR criteria, seriousness definitions, expedited timelines
-- E2B(R3) — Electronic ICSR transmission, data elements
-- E2E — PV planning, signal management, PSUR/PBRER
+- E2A  -  ICSR criteria, seriousness definitions, expedited timelines
+- E2B(R3)  -  Electronic ICSR transmission, data elements
+- E2E  -  PV planning, signal management, PSUR/PBRER
 
 **FDA**
-- 21 CFR Part 312 — IND safety reporting: 7-day/15-day reports, causality standards
-- FDA MedWatch and FAERS — Post-marketing reporting, FAERS data structure and biases
+- 21 CFR Part 312  -  IND safety reporting: 7-day/15-day reports, causality standards
+- FDA MedWatch and FAERS  -  Post-marketing reporting, FAERS data structure and biases
 
 **EMA GVP**
-- Module I — PV systems and quality (PSMF, QPPV requirements)
-- Module V — Risk management systems (RMP structure, aRMMs)
-- Module VI — Adverse reaction management and reporting
-- Module VII — PBRER/PSUR periodic safety reports
-- Module IX — Signal management (PRAC, EVDAS, BCPNN methodology)
+- Module I  -  PV systems and quality (PSMF, QPPV requirements)
+- Module V  -  Risk management systems (RMP structure, aRMMs)
+- Module VI  -  Adverse reaction management and reporting
+- Module VII  -  PBRER/PSUR periodic safety reports
+- Module IX  -  Signal management (PRAC, EVDAS, BCPNN methodology)
 
 **Cross-jurisdictional**
-- Evans Criteria — PRR formula, signal thresholds, statistical biases
-- MedDRA Coding Conventions — PT selection, hierarchy navigation
+- Evans Criteria  -  PRR formula, signal thresholds, statistical biases
+- MedDRA Coding Conventions  -  PT selection, hierarchy navigation
 
 ### Infrastructure
 
 - **OS**: Debian 13 (Trixie), Linux 6.12
-- **GPU**: RTX 5060 Ti 16 GB VRAM — inference + STT (faster-whisper CUDA)
-- **RAM**: 32 GB — Ollama layer offloading for large models
+- **GPU**: RTX 5060 Ti 16 GB VRAM  -  inference + STT (faster-whisper CUDA)
+- **RAM**: 32 GB  -  Ollama layer offloading for large models
 - **Ollama**: Custom configuration for model scheduling, context length, layer distribution
-- **Python**: 3.11 (venv) — chromadb wheels not available for 3.13
+- **Python**: 3.11 (venv)  -  chromadb wheels not available for 3.13
 - **Discord bot**: discord.py 2.7.1, PyNaCl, ffmpeg, edge-tts, faster-whisper
 
 ---
 
-## How It's Built — Multi-AI Development Workflow
+## How It's Built  -  Multi-AI Development Workflow
 
 This workbench is itself a demonstration of AI-augmented development methodology. Three AI systems collaborate under human supervision to build the platform:
 
@@ -345,7 +345,7 @@ This workbench is itself a demonstration of AI-augmented development methodology
 **Division of AI labor:**
 - **Claude Code** (Anthropic): Architecture decisions, vault design, complex statistical fixes, task spec authoring, code review. High-level thinking, broad context. Sessions are expensive, used strategically.
 - **Hermes + Gemma 4** (local): Module implementation from Claude's task specs. Tool-calling agent that writes and tests code autonomously using the Hermes skill system. Free to run, handles well-specified implementation tasks.
-- **Gemma 4 26B** (Ollama, reasoning): Clinical reasoning at inference time — signal interpretation, MedDRA deliberation, regulatory Q&A. Not used in development, used in production.
+- **Gemma 4 26B** (Ollama, reasoning): Clinical reasoning at inference time  -  signal interpretation, MedDRA deliberation, regulatory Q&A. Not used in development, used in production.
 - **Gemini CLI** (Google): Code auditing, cross-file consistency checks, large-context document review.
 
 **Why this matters:** The multi-AI workflow demonstrates that a solo consultant can maintain a production-grade clinical AI platform with near-zero cloud costs by using each AI system for what it does best. Claude's architectural judgment × Hermes' implementation throughput × Gemma's local reasoning × human clinical expertise = a system that would require a full engineering team to build traditionally.
@@ -356,7 +356,7 @@ This is the methodology, not just the tool.
 
 ## About
 
-Built by a PharmD, BCPS, BCCCP with 20 years of critical care and infectious disease experience who got tired of waiting for enterprise PV platforms to catch up with what local AI can already do. The clinical judgment layer isn't a guardrail bolted on — it's the reason the system exists.
+Built by a PharmD, BCPS, BCCCP with 20 years of critical care and infectious disease experience who got tired of waiting for enterprise PV platforms to catch up with what local AI can already do. The clinical judgment layer isn't a guardrail bolted on  -  it's the reason the system exists.
 
 **Stack philosophy:** Local-first. No cloud dependencies for core function. Data stays on-machine. The 26B reasoning model runs on consumer hardware (RTX 5060 Ti) and outperforms cloud-hosted GPT-3.5-class models on structured clinical PV tasks.
 

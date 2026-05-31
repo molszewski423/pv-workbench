@@ -8,6 +8,16 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from modules.icsr_generator import CaseData, generate_icsr_narrative
 
 st.set_page_config(page_title="ICSR Generator", page_icon="📝", layout="wide")
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent.parent.parent))
+from auth import require_auth, auth_sidebar
+require_auth()
+
+with st.sidebar:
+    auth_sidebar()
+
 st.title("📝 ICSR Narrative Generator")
 st.caption("E2B(R3)-aligned · gemma4:e4b drafting · DRAFT only — mandatory senior clinical review before submission")
 
@@ -50,6 +60,19 @@ if st.button("Generate Draft Narrative", type="primary"):
         )
         result = generate_icsr_narrative(case)
         
+    try:
+        from shared.pdf_report import save_icsr_report
+        case_dict = {
+            "patient_description": f"Age: {age}, Sex: {sex}, Weight: {weight}kg. History: {medical_history}",
+            "drug_name": drug, "dose_route": dose, "indication": indication,
+            "start_date": start_date, "stop_date": stop_date,
+            "adverse_event": ae_description, "outcome": outcome,
+        }
+        pdf_path = save_icsr_report(case_dict, result)
+        st.success(f"PDF saved → {pdf_path.name}")
+    except Exception as e:
+        st.warning(f"PDF save failed: {e}")
+
     st.subheader("Draft Narrative")
     st.text_area("Copy/Edit Narrative", value=result.narrative, height=400)
     

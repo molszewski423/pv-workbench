@@ -9,6 +9,16 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from modules.signal_detection import run_signal_detection, interpret_signals
 
 st.set_page_config(page_title="Signal Detection", page_icon="📊", layout="wide")
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent.parent.parent))
+from auth import require_auth, auth_sidebar
+require_auth()
+
+with st.sidebar:
+    auth_sidebar()
+
 st.title("📊 FAERS Signal Detection")
 st.caption("PRR/chi² disproportionality · Evans criteria · gemma4:26b clinical interpretation")
 
@@ -143,6 +153,15 @@ if run:
                 except Exception as e:
                     st.error(f"Interpretation failed: {e}")
                     st.stop()
+
+            try:
+                from shared.pdf_report import save_signal_detection_report, generate_signal_discussion
+                with st.spinner("Generating clinical discussion narrative..."):
+                    discussion = generate_signal_discussion(drug_name, comparator, results)
+                pdf_path = save_signal_detection_report(drug_name, comparator, results, raw_signals=signals, discussion=discussion)
+                st.success(f"PDF saved → {pdf_path.name}")
+            except Exception as e:
+                st.warning(f"PDF save failed: {e}")
 
             action_colors = {"expedited": "error", "routine": "warning", "monitor": "info", "none": "success"}
 
