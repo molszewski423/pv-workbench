@@ -24,12 +24,12 @@ Deployed on a three-node **k3s cluster** in the `ai` namespace. No local Python 
 
 ```bash
 # Prerequisites: kubectl configured, gitlab-registry pull secret in ai namespace
-# (see k8s/README or Secrets section below)
+# (see Secrets section below)
 
-kubectl apply -f k8s/ollama.yaml          # Ollama pod + service + PV
-kubectl apply -f k8s/pv-workbench.yaml    # Streamlit dashboard + PVCs
-kubectl apply -f k8s/argus.yaml           # Discord bot
-kubectl apply -f k8s/ingress.yaml         # Traefik rules
+kubectl apply -f ~/homelab-infra/k8s/ollama.yaml          # Ollama pod + service + PV
+kubectl apply -f ~/homelab-infra/k8s/pv-workbench.yaml    # Streamlit dashboard + PVCs
+kubectl apply -f ~/homelab-infra/k8s/argus.yaml           # Discord bot
+kubectl apply -f ~/homelab-infra/k8s/ingress.yaml         # Traefik rules
 
 # Dashboard: http://pv.lan  (add 192.168.4.54 pv.lan to /etc/hosts)
 # Argus bot: runs in parallel pod, same image, CMD overridden to src/argus_bot.py
@@ -248,10 +248,10 @@ The platform never makes final regulatory determinations. `is_draft` cannot be s
 
 ```bash
 # 1. Apply manifests (requires kubectl + pull secret pre-created)
-kubectl apply -f k8s/ollama.yaml
-kubectl apply -f k8s/pv-workbench.yaml
-kubectl apply -f k8s/argus.yaml
-kubectl apply -f k8s/ingress.yaml
+kubectl apply -f ~/homelab-infra/k8s/ollama.yaml
+kubectl apply -f ~/homelab-infra/k8s/pv-workbench.yaml
+kubectl apply -f ~/homelab-infra/k8s/argus.yaml
+kubectl apply -f ~/homelab-infra/k8s/ingress.yaml
 
 # 2. Ingest vault
 kubectl exec -n ai deployment/pv-workbench -- python3 -m ingester.vault_ingester
