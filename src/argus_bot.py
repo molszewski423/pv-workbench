@@ -44,6 +44,7 @@ import logging
 import os
 import smtplib
 import sys
+import time
 import tempfile
 from pathlib import Path
 from typing import Optional
@@ -436,7 +437,7 @@ def _write_heartbeat() -> None:
         from config import OUTPUT_DIR
         hb = OUTPUT_DIR / ".argus_heartbeat"
         hb.parent.mkdir(parents=True, exist_ok=True)
-        hb.write_text(str(__import__("time").time()))
+        hb.write_text(str(time.time()))
     except Exception:
         pass
 

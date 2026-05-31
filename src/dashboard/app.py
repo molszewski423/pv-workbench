@@ -18,7 +18,7 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).parent.parent))
 import shared_state
 from auth import require_auth, auth_sidebar
-from config import CHROMA_PATH, COLLECTION_NAME, OLLAMA_BASE_URL, REASON_MODEL, DRAFT_MODEL
+from config import CHROMA_PATH, COLLECTION_NAME, OLLAMA_BASE_URL, OUTPUT_DIR, REASON_MODEL, DRAFT_MODEL
 from projects import list_projects, load_project
 
 st.set_page_config(
@@ -70,13 +70,12 @@ def _ollama_running() -> list[str]:
 @st.cache_data(ttl=60)
 def _argus_status() -> tuple[str, str]:
     """(active_state, started_timestamp) — checks heartbeat file written by argus pod."""
-    import time
     hb = OUTPUT_DIR / ".argus_heartbeat"
     try:
         mtime = hb.stat().st_mtime
         age = time.time() - mtime
         if age < 120:  # heartbeat within last 2 minutes = alive
-            started = __import__("datetime").datetime.fromtimestamp(mtime).strftime("%Y-%m-%d %H:%M:%S")
+            started = datetime.fromtimestamp(mtime).strftime('%Y-%m-%d %H:%M:%S')
             return "active/running", started
         return "inactive/dead", ""
     except FileNotFoundError:
