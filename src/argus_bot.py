@@ -430,9 +430,29 @@ async def _classify_intent(message_text: str) -> str:
 
 # ─── Event handlers ───────────────────────────────────────────────────────────
 
+def _write_heartbeat() -> None:
+    """Write a timestamp file so the Streamlit dashboard can detect we're alive."""
+    try:
+        from config import OUTPUT_DIR
+        hb = OUTPUT_DIR / ".argus_heartbeat"
+        hb.parent.mkdir(parents=True, exist_ok=True)
+        hb.write_text(str(__import__("time").time()))
+    except Exception:
+        pass
+
+
+async def _heartbeat_loop() -> None:
+    await bot.wait_until_ready()
+    while not bot.is_closed():
+        _write_heartbeat()
+        await asyncio.sleep(60)
+
+
 @bot.event
 async def on_ready():
     logger.info(f"Argus online as {bot.user} (id={bot.user.id})")
+    _write_heartbeat()
+    asyncio.create_task(_heartbeat_loop())
     for guild in bot.guilds:
         logger.info(f"Connected to guild: {guild.name} (id={guild.id})")
         channels = [c.name for c in guild.text_channels]

@@ -69,18 +69,18 @@ def _ollama_running() -> list[str]:
 
 @st.cache_data(ttl=60)
 def _argus_status() -> tuple[str, str]:
-    """(active_state, started_timestamp)"""
+    """(active_state, started_timestamp) — checks heartbeat file written by argus pod."""
+    import time
+    hb = OUTPUT_DIR / ".argus_heartbeat"
     try:
-        out = subprocess.check_output(
-            ["systemctl", "--user", "show", "argus-bot.service",
-             "--property=ActiveState,SubState,ExecMainStartTimestamp"],
-            text=True, timeout=5,
-        )
-        props = dict(line.split("=", 1) for line in out.strip().splitlines() if "=" in line)
-        state = props.get("ActiveState", "unknown")
-        sub = props.get("SubState", "")
-        started = props.get("ExecMainStartTimestamp", "")
-        return f"{state}/{sub}", started
+        mtime = hb.stat().st_mtime
+        age = time.time() - mtime
+        if age < 120:  # heartbeat within last 2 minutes = alive
+            started = __import__("datetime").datetime.fromtimestamp(mtime).strftime("%Y-%m-%d %H:%M:%S")
+            return "active/running", started
+        return "inactive/dead", ""
+    except FileNotFoundError:
+        return "inactive/dead", ""
     except Exception:
         return "unknown", ""
 

@@ -19,7 +19,7 @@ OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
 EMBED_MODEL = "nomic-embed-text"
 REASON_MODEL = "gemma4:26b"    # Thinking Mode — regulatory Q&A, signal interpretation, MedDRA deliberation
 DRAFT_MODEL = "gemma4:e4b"     # Prose generation — ICSR narratives, digests, summaries
-CHAT_MODEL  = os.environ.get("CHAT_MODEL", "gemma4:e4b")  # Fast path — intent routing, general chat
+CHAT_MODEL  = os.environ.get("CHAT_MODEL", "qwen2.5:7b")  # Fast path — intent routing, general chat
 
 # Chunking
 CHUNK_SIZE = 800
