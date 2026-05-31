@@ -61,8 +61,8 @@ kubectl create secret generic argus-secrets -n ai \
 ### CI/CD
 
 Every push to `main` triggers a GitLab CI pipeline (`.gitlab-ci.yml`):
-1. `lint` — ruff check
-2. `build` — `docker build` + push to `registry.gitlab.com/molszewski423/pv-workbench:latest`
+1. `lint` - ruff check
+2. `build` - `docker build` + push to `registry.gitlab.com/molszewski423/pv-workbench:latest`
 
 Rollout: `kubectl rollout restart deployment/pv-workbench deployment/argus-bot -n ai`
 
@@ -333,7 +333,7 @@ No data leaves the machine. All LLM inference runs on an RTX 5060 Ti 16 GB, serv
 | `gemma4:26b` | ~8 GB active | Regulatory Q&A, signal interpretation, MedDRA coding | `REASON_MODEL` |
 | `gemma4:e4b` | ~3 GB | ICSR narratives, lit digests, prose drafting | `DRAFT_MODEL` |
 | `qwen2.5:7b` | ~5 GB | Intent classification, general Discord chat (fast path) | `CHAT_MODEL` |
-| `qwen3:30b` | ~19 GB | Available; high-capacity alternative reasoning | — |
+| `qwen3:30b` | ~19 GB | Available; high-capacity alternative reasoning | - |
 | `nomic-embed-text` | ~0.3 GB | Vault embeddings (retrieval only) | `EMBED_MODEL` |
 
 All models served by the Ollama k3s pod on mikepc (RTX 5060 Ti). Override any model at deploy time via env vars in the k8s manifest.
@@ -387,10 +387,10 @@ ChromaDB with `nomic-embed-text` embeddings:
 | Component | Detail |
 |---|---|
 | **Cluster** | k3s v1.35, two nodes: mikepc (control plane) + archbox (worker) |
-| **Namespace** | `ai` — all workloads here |
+| **Namespace** | `ai` - all workloads here |
 | **Ingress** | Traefik (k3s built-in); `pv.lan` → pv-workbench:8501 |
 | **Registry** | `registry.gitlab.com/molszewski423/pv-workbench:latest` |
-| **GPU node** | mikepc — RTX 5060 Ti 16 GB; NVIDIA device plugin + RuntimeClass `nvidia` |
+| **GPU node** | mikepc - RTX 5060 Ti 16 GB; NVIDIA device plugin + RuntimeClass `nvidia` |
 | **Storage** | k3s local-path provisioner; PVCs: `pv-workbench-chroma` (2 Gi), `pv-workbench-output` (5 Gi) |
 | **OS** | Debian 13 (Trixie), Linux 6.12 |
 | **Python** | 3.11 in container (chromadb wheels not available for 3.13) |
