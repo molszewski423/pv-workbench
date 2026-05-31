@@ -55,7 +55,7 @@ from discord.ext import commands
 _SRC = Path(__file__).parent
 sys.path.insert(0, str(_SRC))
 
-from config import REASON_MODEL, DRAFT_MODEL, OLLAMA_BASE_URL, TOP_K
+from config import REASON_MODEL, DRAFT_MODEL, CHAT_MODEL, OLLAMA_BASE_URL, TOP_K
 import shared_state
 from projects import list_projects, load_project, ProjectConfig
 
@@ -405,12 +405,12 @@ async def _log_status(guild: discord.Guild | None, input_text: str, intent: str,
 
 
 async def _classify_intent(message_text: str) -> str:
-    """Use gemma4:26b to classify intent if ambiguous."""
+    """Classify intent using the fast chat model — routing labels don't need 26b."""
     from langchain_ollama import ChatOllama
     from langchain_core.prompts import ChatPromptTemplate
     from langchain_core.output_parsers import StrOutputParser
 
-    llm = ChatOllama(model=REASON_MODEL, base_url=OLLAMA_BASE_URL, temperature=0)
+    llm = ChatOllama(model=CHAT_MODEL, base_url=OLLAMA_BASE_URL, temperature=0)
     workbench_ctx = _build_workbench_context()
     system_prompt = f"{INTENT_PROMPT}\n\n{workbench_ctx}"
     if _MICHAEL_CONTEXT:
@@ -680,7 +680,7 @@ async def _route_message(message: discord.Message, route: str):
             asyncio.create_task(_run_detection())
 
         elif route == "GENERAL":
-            await _log_status(message.guild, query, route, REASON_MODEL)
+            await _log_status(message.guild, query, route, CHAT_MODEL)
             from langchain_ollama import ChatOllama
             from langchain_core.messages import HumanMessage, SystemMessage
 
@@ -692,7 +692,7 @@ async def _route_message(message: discord.Message, route: str):
 
             workbench_ctx = _build_workbench_context()
             user_context = f"\n\n## Who You Are Talking To\n{_MICHAEL_CONTEXT}" if _MICHAEL_CONTEXT else ""
-            llm = ChatOllama(model=REASON_MODEL, base_url=OLLAMA_BASE_URL)
+            llm = ChatOllama(model=CHAT_MODEL, base_url=OLLAMA_BASE_URL)
             sys_msg = SystemMessage(content=(
                 f"You are Argus, the Junior Analyst for the PV AI Workbench. "
                 f"You assist Senior Reviewer Michael Olszewski (PharmD, BCPS, BCCCP, 18 years ICU). "
