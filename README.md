@@ -69,6 +69,10 @@ Every push to `main` triggers a GitLab CI pipeline (`.gitlab-ci.yml`):
 
 Rollout: `kubectl rollout restart deployment/pv-workbench deployment/argus-bot -n ai`
 
+**Local mirror:** Repository is mirrored to Gitea at `http://git.lan` (k3s `infra` namespace, pinned to mikepc) — clone/pull works LAN-only without GitLab access.
+
+**Manifests (IaC):** k8s Deployments, Services, PVCs, and Ingress rules live in `~/homelab-infra/k8s/pv-workbench.yaml` and `argus.yaml` on mikepc. These are the authoritative infrastructure-as-code definitions for this deployment.
+
 ---
 
 ## System Architecture
