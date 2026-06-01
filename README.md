@@ -22,6 +22,8 @@ Deployed on a three-node **k3s cluster** in the `ai` namespace. No local Python 
 | **archbox** | Worker | Tailscale | i3-4130T, 24/7 server |
 | **mikeinspiron** | Worker (LAN only) | LAN | Dell Inspiron 3501, Debian 13 |
 
+![Cluster Architecture](docs/cluster-architecture.png)
+
 ```bash
 # Prerequisites: kubectl configured, gitlab-registry pull secret in ai namespace
 # (see Secrets section below)
