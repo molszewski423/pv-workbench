@@ -20,7 +20,7 @@ Deployed on a three-node **k3s cluster** in the `ai` namespace. No local Python 
 |---|---|---|---|
 | **mikepc** | Control plane + GPU | Tailscale | RTX 5060 Ti 16 GB, 32 GB RAM |
 | **archbox** | Worker | Tailscale | i3-4130T, 24/7 server |
-| **mikeinspiron** | Worker (LAN only) | 192.168.4.33 | Dell Inspiron, Debian 13 |
+| **mikeinspiron** | Worker (LAN only) | LAN | Dell Inspiron 3501, Debian 13 |
 
 ```bash
 # Prerequisites: kubectl configured, gitlab-registry pull secret in ai namespace
