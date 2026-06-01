@@ -2,7 +2,7 @@
 
 **Local-LLM pharmacovigilance platform · Drug-agnostic · Clinician-designed**
 
-A production-grade pharmacovigilance (PV) platform that pairs 18 years of ICU/critical care clinical expertise with agentic AI and PV data science. Built for a PharmD, BCPS, BCCCP consultant managing multiple client drugs in parallel  -  every AI output is a draft reviewed by the clinician before any regulatory use.
+A production-grade pharmacovigilance (PV) platform that pairs two decades of critical care and infectious disease expertise with agentic AI and PV data science. Built for a clinician-consultant managing multiple client drugs in parallel  -  every AI output is a draft reviewed by the clinician before any regulatory use.
 
 ---
 
@@ -73,7 +73,7 @@ Rollout: `kubectl rollout restart deployment/pv-workbench deployment/argus-bot -
 
 ![Architecture](docs/architecture.png)
 
-**Design principle:** All AI outputs carry `is_draft=True` and `reviewer_flag`. The platform is a junior analyst  -  the PharmD is the senior reviewer.
+**Design principle:** All AI outputs carry `is_draft=True` and `reviewer_flag`. The platform is a junior analyst  -  the clinician is the senior reviewer.
 
 ---
 
@@ -234,8 +234,7 @@ Domain breakdown: Regulatory(8/8) · Signal(7/7) · MedDRA(6/6) · ICSR(5/5) · 
 ```
 AI Output ──► is_draft=True ──► reviewer_flag=True ──► Senior Reviewer Sign-off
                                                               │
-                                                    PharmD · BCPS · BCCCP
-                                                    20 years critical care and infectious disease
+                                                    clinical pharmacist · two decades critical care
 ```
 
 The platform never makes final regulatory determinations. `is_draft` cannot be set to `False` by any module function  -  it is a design invariant, not a configuration option.
@@ -405,7 +404,7 @@ This workbench is itself a demonstration of AI-augmented development methodology
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                   Human Supervision                         │
-│           PharmD · BCPS · BCCCP · 18 years ICU             │
+│        clinical pharmacist · two decades critical care       │
 │  Clinical judgment · Architectural decisions · QA sign-off  │
 └────────────┬──────────────┬──────────────────┬─────────────┘
              │              │                  │
@@ -440,7 +439,7 @@ This is the methodology, not just the tool.
 
 ## About
 
-Built by a PharmD, BCPS, BCCCP with 20 years of critical care and infectious disease experience who got tired of waiting for enterprise PV platforms to catch up with what local AI can already do. The clinical judgment layer isn't a guardrail bolted on  -  it's the reason the system exists.
+Built by a PharmD, BCPS, BCCCP with two decades of critical care and infectious disease experience who got tired of waiting for enterprise PV platforms to catch up with what local AI can already do. The clinical judgment layer isn't a guardrail bolted on  -  it's the reason the system exists.
 
 **Stack philosophy:** Local-first. No cloud dependencies for core function. Data stays on-machine. The 26B reasoning model runs on consumer hardware (RTX 5060 Ti) and outperforms cloud-hosted GPT-3.5-class models on structured clinical PV tasks.
 
