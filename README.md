@@ -393,6 +393,10 @@ ChromaDB with `nomic-embed-text` embeddings:
 | **GPU node** | mikepc - RTX 5060 Ti 16 GB; NVIDIA device plugin + RuntimeClass `nvidia` |
 | **Storage** | k3s local-path provisioner; PVCs: `pv-workbench-chroma` (2 Gi), `pv-workbench-output` (5 Gi) |
 | **OS** | Debian 13 (Trixie), Linux 6.12 |
+| **Firewall** | nftables default-deny inbound on all nodes — `homelab-firewall.service` |
+| **IDS/IPS** | CrowdSec + firewall bouncer, 28k+ community-blocked IPs |
+| **DNS** | AdGuard Home — DoH/DoT upstreams, no plaintext DNS |
+| **Ingress** | Cloudflare Tunnel — no open inbound ports on any machine |
 | **Python** | 3.11 in container (chromadb wheels not available for 3.13) |
 
 ---
