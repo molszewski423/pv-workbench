@@ -18,8 +18,8 @@ Deployed on a three-node **k3s cluster** in the `ai` namespace. No local Python 
 
 | Node | Role | IP | Hardware |
 |---|---|---|---|
-| **mikepc** | Control plane + GPU | 100.97.45.57 (Tailscale) | RTX 5060 Ti 16 GB, 32 GB RAM |
-| **archbox** | Worker | 100.96.122.27 (Tailscale) | i3-4130T, 24/7 server |
+| **mikepc** | Control plane + GPU | Tailscale | RTX 5060 Ti 16 GB, 32 GB RAM |
+| **archbox** | Worker | Tailscale | i3-4130T, 24/7 server |
 | **mikeinspiron** | Worker (LAN only) | 192.168.4.33 | Dell Inspiron, Debian 13 |
 
 ```bash
