@@ -19,8 +19,8 @@ Deployed on a three-node **k3s cluster** in the `ai` namespace. No local Python 
 | Node | Role | IP | Hardware |
 |---|---|---|---|
 | **mikepc** | Control plane + GPU | Tailscale | RTX 5060 Ti 16 GB, 32 GB RAM |
-| **archbox** | Worker | Tailscale | i3-4130T, 24/7 server |
-| **mikeinspiron** | Worker (LAN only) | LAN | Dell Inspiron 3501, Debian 13 |
+| **debianbox** | Worker (was archbox/Arch until 2026-07-26 rebuild to Debian 13) | Tailscale | i3-4130T, 24/7 server |
+| **centosbook** | Worker (was mikeinspiron, reimaged to CentOS Stream 10 2026-07-25) | LAN | Dell Inspiron 3501, CentOS Stream 10 |
 
 ![Cluster Architecture](docs/cluster-architecture.png)
 
@@ -392,7 +392,7 @@ ChromaDB with `nomic-embed-text` embeddings:
 
 | Component | Detail |
 |---|---|
-| **Cluster** | k3s v1.35, three nodes: mikepc (control plane), archbox + mikeinspiron (workers) |
+| **Cluster** | k3s v1.36, three nodes: mikepc (control plane), debianbox + centosbook (workers) |
 | **Namespace** | `ai` - all workloads here |
 | **Ingress** | Traefik (k3s built-in); `pv.lan` → pv-workbench:8501 |
 | **Registry** | `registry.gitlab.com/molszewski423/pv-workbench:latest` |
