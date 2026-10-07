@@ -305,7 +305,9 @@ The Streamlit dashboard is the main workbench interface, running at **http://pv.
 - **Real-time status**  -  Ollama model health, ChromaDB connectivity, active pipeline status
 - **Vault manager**  -  add/edit knowledge base notes, re-ingest, run benchmark
 
-### Discord  -  Argus Bot (Mobile Mirror)
+### Discord  -  Argus Bot (Mobile Mirror, retired 2026-10-07)
+
+_Retired: kept as a record of what the source does; no longer deployed (see the note at the top)._
 
 The Argus Discord bot (`src/argus_bot.py`) mirrors the full workbench over Discord  -  making the platform accessible on mobile (iPhone, iPad) anywhere with internet:
 
@@ -321,7 +323,7 @@ The Argus Discord bot (`src/argus_bot.py`) mirrors the full workbench over Disco
 
 **Argus is an intelligent router:** `qwen2.5:7b` handles intent classification and general chat (fast path); `gemma4:26b` handles all clinical reasoning when routed to a specialist module; `gemma4:e4b` handles narrative generation. The routing is transparent  -  Argus feels like one unified assistant regardless of which model handles a specific task.
 
-In production, Argus runs as a **separate k3s deployment** (`argus-bot`) in the `ai` namespace, sharing the `pv-workbench-chroma` and `pv-workbench-output` PVCs with the Streamlit pod. The dashboard detects Argus liveness via a heartbeat file written to the shared output PVC every 60 seconds.
+Until its retirement, Argus ran as a **separate k3s deployment** (`argus-bot`) in the `ai` namespace, sharing the `pv-workbench-chroma` and `pv-workbench-output` PVCs with the Streamlit pod. The dashboard detects Argus liveness via a heartbeat file written to the shared output PVC every 60 seconds.
 
 **Voice interface:** `!voice join` → Argus joins your voice channel. `!voice speak <text>` plays TTS via edge-tts. Audio file transcription via `!transcribe` uses faster-whisper on the RTX 5060 Ti GPU. Real-time voice conversation requires the Hermes voice stack (Hermes Discord gateway + `VoiceReceiver`).
 
