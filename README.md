@@ -1,5 +1,12 @@
 # PV Signal Intelligence Workbench
 
+> **Argus Discord bot retired (2026-10-07).** The `argus-bot` deployment, its Secret and its Discord application
+> are gone. The PV workbench will be rebuilt later on the LocumView platform with Matrix in place of Discord, so the
+> bot's deployment does not carry forward. Its source stays here for reference (`src/argus_bot.py`,
+> `src/argus_connectivity_test.py`, `scripts/argus_*.sh`; `src/discord_utils.py` also reads `DISCORD_BOT_TOKEN`,
+> which no deployment provides any more). The last manifest is in homelab-infra `archive/argus-bot/`. The name
+> "Argus" now belongs to a new LocumView persona.
+
 **Local-LLM pharmacovigilance platform · Drug-agnostic · Clinician-designed**
 
 A production-grade pharmacovigilance (PV) platform that pairs two decades of critical care and infectious disease expertise with agentic AI and PV data science. Built for a clinician-consultant managing multiple client drugs in parallel  -  every AI output is a draft reviewed by the clinician before any regulatory use.
@@ -31,11 +38,9 @@ The former third worker, centosbook, was removed on 2026-10-04 (the laptop is no
 
 kubectl apply -f ~/homelab-infra/k8s/ollama.yaml          # Ollama pod + service + PV
 kubectl apply -f ~/homelab-infra/k8s/pv-workbench.yaml    # Streamlit dashboard + PVCs
-kubectl apply -f ~/homelab-infra/k8s/argus.yaml           # Discord bot
 kubectl apply -f ~/homelab-infra/k8s/ingress.yaml         # Traefik rules
 
 # Dashboard: http://pv.lan  (add 192.168.4.54 pv.lan to /etc/hosts)
-# Argus bot: runs in parallel pod, same image, CMD overridden to src/argus_bot.py
 ```
 
 ### Vault ingestion (after first deploy or vault changes)
@@ -56,10 +61,6 @@ kubectl create secret docker-registry gitlab-registry -n ai \
 # Auth credentials (secrets.toml for streamlit-authenticator)
 kubectl create secret generic pv-workbench-secrets -n ai \
   --from-file=secrets.toml=/path/to/secrets.toml
-
-# Discord bot token
-kubectl create secret generic argus-secrets -n ai \
-  --from-literal=DISCORD_BOT_TOKEN=<token>
 ```
 
 ### CI/CD
@@ -68,11 +69,11 @@ Every push to `main` triggers a GitLab CI pipeline (`.gitlab-ci.yml`):
 1. `lint` - ruff check
 2. `build` - `docker build` + push to `registry.gitlab.com/molszewski423/pv-workbench:latest`
 
-Rollout: `kubectl rollout restart deployment/pv-workbench deployment/argus-bot -n ai`
+Rollout: `kubectl rollout restart deployment/pv-workbench -n ai`
 
 **Local mirror:** Repository is mirrored to Gitea at `http://git.lan` (k3s `infra` namespace, pinned to mikepc) — clone/pull works LAN-only without GitLab access.
 
-**Manifests (IaC):** k8s Deployments, Services, PVCs, and Ingress rules live in `~/homelab-infra/k8s/pv-workbench.yaml` and `argus.yaml` on mikepc. These are the authoritative infrastructure-as-code definitions for this deployment.
+**Manifests (IaC):** k8s Deployments, Services, PVCs, and Ingress rules live in `~/homelab-infra/k8s/pv-workbench.yaml` on mikepc. These are the authoritative infrastructure-as-code definitions for this deployment.
 
 ---
 
@@ -256,7 +257,6 @@ The platform never makes final regulatory determinations. `is_draft` cannot be s
 # 1. Apply manifests (requires kubectl + pull secret pre-created)
 kubectl apply -f ~/homelab-infra/k8s/ollama.yaml
 kubectl apply -f ~/homelab-infra/k8s/pv-workbench.yaml
-kubectl apply -f ~/homelab-infra/k8s/argus.yaml
 kubectl apply -f ~/homelab-infra/k8s/ingress.yaml
 
 # 2. Ingest vault
