@@ -11,7 +11,6 @@ __pycache__/
 state.json
 src/context/session_log.md
 .claude/
-CLAUDE.md
 .local_config/
 projects.json
 
